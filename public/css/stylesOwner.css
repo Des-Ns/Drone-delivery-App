@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+:root {
+  --background-color: #edf0f1;
+  --main-color: #6dc1de;
+  --table-color: #ddf2f8;
+  --container-color: #fff;
+  --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background-color);
+  font-family: 'poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+/* .title {
+  align-self: baseline;
+  padding: 0 10%;
+} */
+
+.container {
+  background-color: var(--container-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80vw;
+  border-radius: 5px;
+  box-shadow: var(--box-shadow);
+}
+
+.container .warehouse-loc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container .add-warehouse {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-top: 2px solid var(--background-color);
+}
+
+.add-warehouse .loc-input {
+  padding-bottom: 10px;
+}
+
+.add-warehouse button {
+  font-size: 18px;
+  color: #fff;
+  width: 600px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  background-color: var(--main-color);
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.add-warehouse button:active {
+  transform: scale(0.98);
+}
+
+.monitor-orders {
+  width: 80vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+  padding-bottom: 16px;
+  background-color: var(--container-color);
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.content-table {
+  border-collapse: collapse;
+  width: 90%;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.content-table .thead {
+  font-weight: bold;
+}
+
+.content-table .tbody {
+  padding-bottom: 15px;
+}
+
+.content-table .tbody.active {
+  background-color: var(--table-color);
+}
+
+@media (max-width: 900px) {
+  .products {
+    width: 480px;
+    height: auto;
+  }
+  .add-warehouse button {
+    width: 40vw;
+  }
+}

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop Dashboard</title>
+    <link rel="shortcut icon" href="./img/favicon-16x16.png" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/stylesOwner.css" />
+  </head>
+  <body>
+    <div class="title">
+      <h1>Shop dashboard</h1>
+    </div>
+
+    <div class="container">
+      <div class="warehouse-loc">
+        <h2>Warehouse location at: </h2>
+        <div class="warehouses">
+          <h4>Warehouse 1: <span>X: 100, Y: 100</span> </h4>
+          <h4>Warehouse 2: <span>X: 180, Y: 200</span> </h4>
+        </div>
+      </div>
+
+      <div class="add-warehouse">
+        <h2>Add new warehouse:</h2>
+        <div class="loc-input">
+          <label for="location-X">location X</label>
+          <input id="loc-x" type="number" placeholder="Enter location on X..." /> <br />
+        </div>
+        <div class="loc-input">
+          <label for="location-Y">location Y</label>
+          <input id="loc-y" type="number" placeholder="Enter location on Y..." /> <br />
+        </div>
+        <button>Add new warehouse</button>
+      </div>
+    </div>
+
+    <div class="monitor-orders">
+      <h2>Monitor orders live</h2>
+
+      <table class="content-table">
+        <thead class="thead">
+          <tr>
+            <th>Order</th>
+            <th>Buyer</th>
+            <th>Location</th>
+            <th>Progress</th>
+            <th>Distance</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody class="tbody">
+          <tr>
+            <td>#4531</td>
+            <td>Domenic james</td>
+            <td>135/345</td>
+            <td>95%</td>
+            <td>156 units</td>
+            <td>14 min</td>
+            <td>in progress</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

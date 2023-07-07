@@ -1,13 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Client</title>
     <link rel="shortcut icon" href="./img/favicon-16x16.png" type="image/x-icon" />
-    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/stylesClient.css" />
   </head>
   <body>
-    <h1>Client</h1>
+    <div class="title">
+      <h1>Live Order and Delivery updates</h1>
+    </div>
+
+    <form action="" class="form">
+      <h2>Please select product</h2>
+
+      <div class="products">
+        <div class="product">
+          <img src="./img/donner.jpg" alt="Doner" />
+          <div class="product-title">
+            <h2>Doner</h2>
+          </div>
+        </div>
+
+        <div class="product">
+          <img src="./img/chicken.jpg" alt="chicken" />
+          <div class="product-title">
+            <h2>Roast chicken</h2>
+          </div>
+        </div>
+
+        <div class="product">
+          <img src="./img/pizza.jpg" alt="pizza" />
+          <div class="product-title">
+            <h2>Pizza</h2>
+          </div>
+        </div>
+
+        <div class="product active">
+          <img src="./img/chicken-legs.jpg" alt="chicken-legs" />
+          <div class="product-title">
+            <h2>Fried chicken legs</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="client-input">
+        <h2>Please add your name and adress</h2>
+
+        <div class="inputs">
+          <div class="name">
+            <label for="name">Name</label>
+            <input type="text" placeholder="Enter name please..." />
+          </div>
+
+          <div class="loc">
+            <label for="loc-x">Location X</label>
+            <input type="number" placeholder="Enter X coordinate please..." />
+          </div>
+
+          <div class="loc">
+            <label for="loc-y">Location Y</label>
+            <input type="number" placeholder="Enter Y coordinate please..." />
+          </div>
+        </div>
+      </div>
+
+      <div class="button">
+        <button>Create new order</button>
+      </div>
+    </form>
+
+    <div class="monitor-orders">
+      <h2>Monitor orders live</h2>
+
+      <table class="content-table">
+        <thead class="thead">
+          <tr>
+            <th>Order</th>
+            <th>Buyer</th>
+            <th>Location</th>
+            <th>Progress</th>
+            <th>Distance</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody class="tbody">
+          <tr>
+            <td>#4531</td>
+            <td>Domenic James</td>
+            <td>135/345</td>
+            <td>95%</td>
+            <td>156 units</td>
+            <td>14 min</td>
+            <td>in progress</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </body>
 </html>

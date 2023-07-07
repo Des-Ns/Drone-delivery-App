@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+:root {
+  --background-color: #edf0f1;
+  --main-color: #6dc1de;
+  --table-color: #ddf2f8;
+  --container-color: #fff;
+  --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background-color);
+  font-family: 'poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  background-color: var(--container-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  padding-bottom: 16px;
+  box-shadow: var(--box-shadow);
+}
+
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 80vw;
+  height: 150px;
+  padding: 5px 10;
+  margin-bottom: 60px;
+}
+
+.product {
+  width: 150px;
+  /* height: 150px; */
+  margin: 10px;
+  font-size: 10px;
+  border-radius: 5px;
+}
+
+.product.active {
+  border: 5px solid var(--main-color);
+  border-radius: 10px;
+  transform: scale(1.1);
+}
+
+.product img {
+  width: 100%;
+  border-radius: 5px;
+}
+.product h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.client-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.inputs .name input {
+  width: 210px;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+}
+
+.button button {
+  font-size: 18px;
+  color: #fff;
+  width: 600px;
+  padding: 8px 16px;
+  background-color: var(--main-color);
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.button button:active {
+  transform: scale(0.98);
+}
+
+.monitor-orders {
+  width: 80vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+  padding-bottom: 16px;
+  background-color: var(--container-color);
+  border-radius: 5px;
+  box-shadow: var(--box-shadow);
+}
+
+.content-table {
+  border-collapse: collapse;
+  width: 90%;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.content-table .thead {
+  font-weight: bold;
+}
+
+.content-table .tbody {
+  padding-bottom: 15px;
+}
+
+.content-table .tbody.active {
+  background-color: var(--table-color);
+}
+
+@media (max-width: 900px) {
+  .products {
+    width: 480px;
+    height: auto;
+  }
+  .button button {
+    width: 400px;
+  }
+}
