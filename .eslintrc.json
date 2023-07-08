@@ -18,6 +18,7 @@
     },
     "rules": {
         // "prettier/prettier": "warn",
+        "no-bitwise": "off",
         "no-unused-vars": "warn",
         "no-console": "warn",
         "func-names": "off",
