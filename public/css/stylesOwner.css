@@ -6,6 +6,7 @@
   --table-color: #ddf2f8;
   --container-color: #fff;
   --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  --fontcolor-main: #252525;
 }
 
 * {
@@ -14,6 +15,7 @@
 
 body {
   background-color: var(--background-color);
+  color: var(--fontcolor-main);
   font-family: 'poppins', sans-serif;
   display: flex;
   flex-direction: column;

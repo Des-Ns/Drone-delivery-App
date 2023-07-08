@@ -12,32 +12,31 @@
       <h1>Live Order and Delivery updates</h1>
     </div>
 
-    <form action="" class="form">
+    <div class="container-selection">
       <h2>Please select product</h2>
-
       <div class="products">
-        <div class="product">
+        <div class="product" id="product" data-value="doner">
           <img src="./img/donner.jpg" alt="Doner" />
           <div class="product-title">
             <h2>Doner</h2>
           </div>
         </div>
 
-        <div class="product">
+        <div class="product" id="product" data-value="chicken">
           <img src="./img/chicken.jpg" alt="chicken" />
           <div class="product-title">
             <h2>Roast chicken</h2>
           </div>
         </div>
 
-        <div class="product">
+        <div class="product" id="product" data-value="pizza">
           <img src="./img/pizza.jpg" alt="pizza" />
           <div class="product-title">
             <h2>Pizza</h2>
           </div>
         </div>
 
-        <div class="product active">
+        <div class="product" id="product" data-value="chicken-legs">
           <img src="./img/chicken-legs.jpg" alt="chicken-legs" />
           <div class="product-title">
             <h2>Fried chicken legs</h2>
@@ -45,31 +44,33 @@
         </div>
       </div>
 
-      <div class="client-input">
-        <h2>Please add your name and adress</h2>
+      <form action="" class="form" id="form">
+        <div class="client-input">
+          <h2>Please add your name and adress</h2>
 
-        <div class="inputs">
-          <div class="name">
-            <label for="name">Name</label>
-            <input type="text" placeholder="Enter name please..." />
-          </div>
+          <div class="inputs">
+            <div class="name">
+              <label for="name">Name</label>
+              <input type="text" id="name" placeholder="Enter name please..." required />
+            </div>
 
-          <div class="loc">
-            <label for="loc-x">Location X</label>
-            <input type="number" placeholder="Enter X coordinate please..." />
-          </div>
+            <div class="loc">
+              <label for="loc-x">Location X</label>
+              <input type="number" id="locx" placeholder="Enter X coordinate please..." required />
+            </div>
 
-          <div class="loc">
-            <label for="loc-y">Location Y</label>
-            <input type="number" placeholder="Enter Y coordinate please..." />
+            <div class="loc">
+              <label for="loc-y">Location Y</label>
+              <input type="number" id="locy" placeholder="Enter Y coordinate please..." required />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="button">
-        <button>Create new order</button>
-      </div>
-    </form>
+        <div class="button" id="btn">
+          <button>Create new order</button>
+        </div>
+      </form>
+    </div>
 
     <div class="monitor-orders">
       <h2>Monitor orders live</h2>
@@ -99,5 +100,10 @@
         </tbody>
       </table>
     </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./scripts/Classes/Order.js"></script>
+    <script src="./scripts/client.js"></script>
+    <!-- <script src="./scripts/index.js"></script> -->
   </body>
 </html>

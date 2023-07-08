@@ -6,6 +6,7 @@
   --table-color: #ddf2f8;
   --container-color: #fff;
   --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  --fontcolor-main: #252525;
 }
 
 * {
@@ -14,6 +15,7 @@
 
 body {
   background-color: var(--background-color);
+  color: var(--fontcolor-main);
   font-family: 'poppins', sans-serif;
   display: flex;
   flex-direction: column;
@@ -39,12 +41,15 @@ body {
   height: 20vh;
   border-radius: 5px 0 0 5px;
   background-color: var(--main-color);
+
   font-size: 1.5em;
   border-style: hidden;
 }
 
 .owner button:hover {
   background-image: linear-gradient(to left, rgba(255, 255, 255, 0.6), transparent);
+  font-weight: bold;
+  color: #ffffffc0;
 }
 
 .owner button:active {
@@ -52,7 +57,7 @@ body {
   transform: scale(1.1);
 }
 
-.user button {
+.client button {
   width: 25vw;
   height: 20vh;
   border-radius: 0 5px 5px 0;
@@ -61,18 +66,20 @@ body {
   border-style: hidden;
 }
 
-.user button:hover {
+.client button:hover {
   background-image: linear-gradient(to right, rgba(255, 255, 255, 0.6), transparent);
+  font-weight: bold;
+  color: #ffffffc0;
 }
 
-.user button:active {
+.client button:active {
   transition: transform 0.2s ease;
   transform: scale(1.1);
 }
 
 @media (max-width: 1400px) {
   .owner,
-  .user {
+  .client {
     font-size: 20px;
   }
 }
