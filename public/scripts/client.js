@@ -1,10 +1,15 @@
-const socket = io();
+import { Order } from './Classes/Order.js';
 
+const tableBody = document.getElementById('tbody');
+const username = sessionStorage.getItem('username');
+const usernameEl = document.getElementById('username');
 const form = document.getElementById('form');
 const productsEl = document.querySelectorAll('#product');
 
 let product = [];
 let newOrder;
+
+usernameEl.innerText = username;
 
 function highliteProduct(prodEl) {
   if (prodEl.classList.contains('active')) {
@@ -18,6 +23,41 @@ function createOrder(productEl, name, locX, locY) {
   newOrder = new Order(name, locX, locY, productEl);
   return newOrder;
 }
+
+function addNewOrderToTable() {
+  const newLine = `
+  <tr>
+    <td>#4531</td>
+    <td>Domenic Jamess</td>
+    <td>135/345</td>
+    <td>95%</td>
+    <td>156 units</td>
+    <td>14 min</td>
+    <td>in progress</td>
+  </tr>
+  `;
+
+  tableBody.innerHTML += newLine;
+}
+
+// nsp ='/'
+const socket = io('http://localhost:5000/');
+
+socket.on('connect', () => {
+  console.log(`Socket connected ${socket.id}`);
+});
+
+socket.on('msg', (msg) => {
+  console.log(msg);
+});
+
+socket.emit('joinRoom', 'client');
+
+socket.emit('Room', 'ABCD');
+
+socket.on('roomJoined', (data) => {
+  console.log(data);
+});
 
 productsEl.forEach((prodEl) => {
   prodEl.addEventListener('click', () => {
@@ -42,5 +82,5 @@ form.addEventListener('submit', (e) => {
   form.reset();
   product = [];
 
-  socket.emit('order', newOrder);
+  socket.emit('order', newOrder); // emit order object
 });

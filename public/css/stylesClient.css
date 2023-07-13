@@ -22,6 +22,24 @@ body {
   align-items: center;
   justify-content: center;
 }
+.body > h1 {
+  margin: auto;
+}
+.username {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0px;
+  left: 10px;
+  background-color: var(--container-color);
+  color: var(--fontcolor-main);
+  width: 200px;
+  height: 35px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-shadow: var(--box-shadow);
+}
 
 .container-selection {
   background-color: var(--container-color);
@@ -55,26 +73,36 @@ body {
 }
 
 .product {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 150px;
   /* height: 150px; */
   margin: 10px;
   font-size: 10px;
   border-radius: 5px;
+  box-shadow: var(--box-shadow);
+  transition: all 0.2s ease;
 }
 
 .product.active {
   border: 5px solid var(--main-color);
   border-radius: 10px;
   transform: scale(1.1);
+  transition: all 0.2s ease;
 }
 
 .product img {
   width: 100%;
-  border-radius: 5px;
+  border-radius: 5px 5px 0 0;
 }
-.product h2 {
+.product-title {
   text-align: center;
-  margin-bottom: 10px;
+}
+
+.product-title h2 {
+  text-align: center;
 }
 
 .client-input {
@@ -142,9 +170,9 @@ body {
   background-color: var(--table-color);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .products {
-    width: 480px;
+    width: 500px;
     height: auto;
   }
 
@@ -153,5 +181,9 @@ body {
   }
   .button button {
     width: 400px;
+  }
+
+  body h1 {
+    margin-top: 50px;
   }
 }

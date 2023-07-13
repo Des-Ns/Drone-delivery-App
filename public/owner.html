@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="./css/stylesOwner.css" />
   </head>
   <body>
+    <div class="username">
+      <h4 id="username">Username</h4>
+    </div>
+
     <div class="title">
       <h1>Shop dashboard</h1>
     </div>
@@ -16,9 +20,16 @@
       <div class="warehouse-loc">
         <h2>Warehouse location at: </h2>
         <div class="warehouses">
-          <h4>Warehouse 1: <span>X: 100, Y: 100</span> </h4>
-          <h4>Warehouse 2: <span>X: 180, Y: 200</span> </h4>
+          <h4
+            >Warehouse 1: <span class="quad">Quadrant-1</span> at
+            <span class="coords">X: 100, Y: 100</span>
+          </h4>
+          <h4
+            >Warehouse 2: <span class="quad">Quadrant-2</span> at
+            <span class="coords">X: 180, Y: 200</span>
+          </h4>
         </div>
+        <button class="button" id="delete-warehouse">Delete warehouse</button>
       </div>
 
       <div class="add-warehouse">
@@ -31,7 +42,7 @@
           <label for="location-Y">location Y</label>
           <input id="loc-y" type="number" placeholder="Enter location on Y..." /> <br />
         </div>
-        <button>Add new warehouse</button>
+        <button class="button">Add new warehouse</button>
       </div>
     </div>
 
@@ -65,7 +76,6 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <!-- <script src="./scripts/index.js"></script> -->
-    <script src="./scripts/owner.js"></script>
+    <script src="./scripts/owner.js" type="module"></script>
   </body>
 </html>

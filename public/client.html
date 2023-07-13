@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="./css/stylesClient.css" />
   </head>
   <body>
+    <div class="username">
+      <h4 id="username">Username</h4>
+    </div>
+
     <div class="title">
       <h1>Live Order and Delivery updates</h1>
     </div>
@@ -87,7 +91,7 @@
             <th>Status</th>
           </tr>
         </thead>
-        <tbody class="tbody">
+        <tbody class="tbody" id="tbody">
           <tr>
             <td>#4531</td>
             <td>Domenic James</td>
@@ -102,8 +106,8 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="./scripts/Classes/Order.js"></script>
-    <script src="./scripts/client.js"></script>
+    <!-- <script src="./scripts/Classes/Order.js"></script> -->
+    <script src="./scripts/client.js" type="module"></script>
     <!-- <script src="./scripts/index.js"></script> -->
   </body>
 </html>

@@ -11,18 +11,35 @@
     <h1>Log in</h1>
     <div class="login-container">
       <div class="owner">
-        <a href="owner.html" id="owner">
-          <button>Owner</button>
-        </a>
+        <!-- <a href="owner.html" id="owner" target="_blank"> -->
+        <button id="owner">Owner</button>
+        <!-- </a> -->
       </div>
       <div class="client">
-        <a href="client.html">
-          <button id="client">Client</button>
-        </a>
+        <!-- <a href="client.html" target="_blank"> -->
+        <button id="client">Client</button>
+        <!-- </a> -->
       </div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="./scripts/index.js"></script>
+    <form action="" class="login-modal hidden" id="login-form">
+      <h2>Please log in </h2>
+      <div class="username">
+        <label for="name">Userame</label>
+        <input type="text" id="username" placeholder="Enter usename please..." required />
+      </div>
+      <div class="password">
+        <label for="name">Password</label>
+        <input type="password" id="password" placeholder="Enter password please..." required />
+      </div>
+      <div id="btn-login">
+        <button type="submit" class="button">Sign in</button>
+      </div>
+    </form>
+
+    <div class="backdrop hidden" id="backdrop"></div>
+
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script src="./scripts/index.js" type="module"></script>
   </body>
 </html>
