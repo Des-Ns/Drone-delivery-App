@@ -6,7 +6,7 @@ const usernameEl = document.getElementById('username');
 const form = document.getElementById('form');
 const productsEl = document.querySelectorAll('#product');
 
-let product = [];
+let products = [];
 let newOrder;
 
 usernameEl.innerText = username;
@@ -59,10 +59,14 @@ socket.on('roomJoined', (data) => {
   console.log(data);
 });
 
+socket.on('order-msg', (data) => {
+  console.log(data);
+});
+
 productsEl.forEach((prodEl) => {
   prodEl.addEventListener('click', () => {
     highliteProduct(prodEl);
-    product.push(prodEl.getAttribute('data-value'));
+    products.push(prodEl.getAttribute('data-value'));
     return prodEl;
   });
 });
@@ -74,13 +78,13 @@ form.addEventListener('submit', (e) => {
   const locX = e.target.locx.value;
   const locY = e.target.locy.value;
 
-  newOrder = createOrder(product, name, locX, locY);
+  newOrder = createOrder(products, name, locX, locY);
 
   productsEl.forEach((prodEl) => {
     prodEl.classList = 'product';
   });
   form.reset();
-  product = [];
+  products = [];
 
   socket.emit('order', newOrder); // emit order object
 });

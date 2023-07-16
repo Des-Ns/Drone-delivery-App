@@ -2,10 +2,10 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
-const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
+const { sessionMiddleware, wrap, userSessionStore } = require('./controlers/serverControler');
 
 const User = require('./utils/classes/User');
 const Room = require('./utils/classes/Room');
@@ -15,83 +15,79 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 const users = [];
-const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')]; // room objects
-const sessionStore = new Map();
+const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
 
 function generateSessionToken() {
   return uuidv4();
 }
 
-function getUserFromSessionToken(sessionToken) {
-  return sessionStore.get(sessionToken);
-}
-
-app.use(
-  session({
-    secret: 'your-secret-key',
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+app.use(cookieParser());
+app.use(sessionMiddleware);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
-
+  const sessionToken = generateSessionToken();
   let user = users.find((user) => user.username === username && user.password === password);
 
-  if (!user) {
-    const id = Math.floor(Math.random() * 3) + 1; // for test only
-    user = new User(id, username, password);
+  if (user) {
+    user.sessionTokens.push(sessionToken);
+  } else {
+    const id = Math.floor(Math.random() * 5) + 1; // for test only
+    user = new User(id, username, password, sessionToken);
     users.push(user);
   }
 
-  const sessionToken = generateSessionToken();
-
-  sessionStore.set(sessionToken, user); // use session token or user Id
-  console.log(sessionStore);
+  userSessionStore.set(sessionToken, user); // use session token or user Id
+  console.log('44-userSessionStore::', userSessionStore);
 
   req.session.sessionToken = sessionToken; // Save the authenticated user details in the session
+  console.log('47-session::', req.session);
+
+  res.cookie('connect.sid', sessionToken); // set session token in cookie
+  console.log('50-users[]::', users);
 
   return res.status(200).json({ success: true, username: user.username }); // Return success response
 });
 
-console.log(users);
+io.use(wrap(sessionMiddleware));
 
 // connect Client '/' nsp
 io.of('/').on('connection', (socket) => {
-  console.log(`New socet connection ${socket.id}`);
-  console.log(socket.handshake);
+  console.log('59', `New socet connection ${socket.id}`);
 
   socket.emit('msg', `Welcome to nsp: "/" socket.id: ${socket.id} `);
 
   socket.on('joinRoom', (roomToJoin) => {
     socket.join(roomToJoin);
-    console.log(`Joined ${roomToJoin} room`);
+    console.log('65::', `Joined ${roomToJoin} room`);
 
     io.to(`${roomToJoin}`).emit('roomJoined', `User joined ${roomToJoin} room.`);
   });
 
-  socket.on('Room', (data) => console.log(data)); // 1234 or ABCD
+  socket.on('order', (order) => {
+    console.log('71-userSessionStore::', userSessionStore);
 
-  socket.on('order', (data) => {
-    console.log(data);
+    const { sessionToken } = socket.request.session;
 
-    const { sessionToken } = socket.handshake;
-    console.log(socket);
-    const user = getUserFromSessionToken(sessionToken);
+    const user = users.find((user) => user.sessionTokens.includes(sessionToken));
 
+    console.log('77-users::', users);
+    console.log('78-user::', user);
     if (user) {
-      // Assign the newOrder object to the user
-      user.order = newOrder;
+      user.addOrder(order);
 
-      console.log(`New order assigned to user: ${user.username}`);
+      console.log('87-user.orders::', user.orders);
+      console.log(`New order assigned to user: ${user.username}, Id: ${user.id}`);
+      socket.to(socket.id).emit('order-msg', 'Order received.');
+      socket.emit('order-msg', 'Order received.');
     } else {
       console.log('User not found');
+      socket.to(socket.id).emit('order-msg', 'Order denied.');
     }
-  }); // order object
+  });
 
   socket.on('disconnect', () => {
     io.emit('msg', 'User left');

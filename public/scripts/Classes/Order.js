@@ -1,6 +1,6 @@
 export class Order {
-  constructor(name, locX, locY, ...product) {
-    this.product = [...product];
+  constructor(name, locX, locY, products) {
+    this.products = products;
     this.name = name;
     this.locX = locX;
     this.locY = locY;
