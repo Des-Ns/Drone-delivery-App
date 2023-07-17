@@ -1,11 +1,11 @@
 class User {
-  constructor(id, username, password, sessionToken) {
+  constructor(id, username, password, sessionID) {
     this.id = id;
     this.username = username;
     this.password = password;
-    this.sessionTokens = [sessionToken];
     this.orders = [];
-    this.socketIds = [];
+    this.sessionIDs = [sessionID];
+    this.socketIDs = [];
   }
 
   addOrder(order) {

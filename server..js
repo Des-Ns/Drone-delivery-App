@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+
 const { v4: uuidv4 } = require('uuid');
 const { sessionMiddleware, wrap, userSessionStore } = require('./controlers/serverControler');
 
@@ -18,11 +18,10 @@ const users = [];
 const connectedUsesrs = {};
 const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
 
-function generateSessionToken() {
+function generateID() {
   return uuidv4();
 }
 
-app.use(cookieParser());
 app.use(sessionMiddleware);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -30,24 +29,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
-  const sessionToken = generateSessionToken();
+  const { sessionID } = req;
   let user = users.find((user) => user.username === username && user.password === password);
 
   if (user) {
-    user.sessionTokens.push(sessionToken);
+    user.sessionIDs.push(sessionID);
   } else {
     const id = Math.floor(Math.random() * 5) + 1; // for test only
-    user = new User(id, username, password, sessionToken);
+    user = new User(id, username, password, sessionID);
     users.push(user);
   }
 
-  userSessionStore.set(sessionToken, user); // use session token or user Id
+  userSessionStore.set(sessionID, user);
   console.log('44-userSessionStore::', userSessionStore);
 
-  req.session.sessionToken = sessionToken; // Save the authenticated user details in the session
+  req.session.sessionID = sessionID; // Save the authenticated user details in the session
   console.log('47-session::', req.session, req.sessionID);
 
-  res.cookie('connect.sid', sessionToken); // set session token in cookie
+  res.cookie('connect.sid', sessionID); // set sessionID in cookie
   console.log('50-users[]::', users);
 
   return res.status(200).json({ success: true, username: user.username }); // Return success response
@@ -55,12 +54,11 @@ app.post('/login', (req, res) => {
 
 io.use(wrap(sessionMiddleware));
 
-// connect Client '/' nsp
 io.of('/').on('connection', (socket) => {
-  console.log('59', `New socet connection ${socket.id}, ${socket.request.sessionID}`);
-  const { sessionToken } = socket.request.session;
-  let user = users.find((user) => user.sessionTokens.includes(sessionToken));
-  user.socketIds.push(socket.id);
+  console.log('59', `New socet connection ${socket.id}, sessinID:: ${socket.request.sessionID}`);
+  const { sessionID } = socket.request;
+  const user = users.find((user) => user.sessionIDs.includes(sessionID));
+  user.socketIDs.push(socket.id);
   console.log('63-user::', user);
 
   socket.emit('msg', `Welcome to nsp: "/" socket.id: ${socket.id} `);
@@ -74,19 +72,16 @@ io.of('/').on('connection', (socket) => {
 
   socket.on('order', (order) => {
     console.log('71-userSessionStore::', userSessionStore);
-
-    const { sessionToken } = socket.request.session;
-    user = users.find((user) => user.sessionTokens.includes(sessionToken));
-
     console.log('77-users::', users);
     console.log('78-user::', user);
+
     if (user) {
       user.addOrder(order);
 
       console.log('87-user.orders::', user.orders);
       console.log(`New order assigned to user: ${user.username}, Id: ${user.id}`);
       socket.to(socket.id).emit('order-msg', 'Order received.');
-      user.socketIds.forEach((socketId) => {
+      user.socketIDs.forEach((socketId) => {
         io.to(socketId).emit('order-msg', 'Order received.');
       });
     } else {
@@ -97,7 +92,9 @@ io.of('/').on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     const disconnectedSocketId = socket.id;
-    user.socketIds.console.log('103::', disconnectedUser);
+    const disconnectedSocketIndex = user.socketIDs.indexOf(disconnectedSocketId);
+    user.socketIDs.splice(disconnectedSocketIndex, 1);
+
     io.emit('msg', 'User left');
   });
 });
