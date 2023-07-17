@@ -15,6 +15,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 const users = [];
+const connectedUsesrs = {};
 const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
 
 function generateSessionToken() {
@@ -44,7 +45,7 @@ app.post('/login', (req, res) => {
   console.log('44-userSessionStore::', userSessionStore);
 
   req.session.sessionToken = sessionToken; // Save the authenticated user details in the session
-  console.log('47-session::', req.session);
+  console.log('47-session::', req.session, req.sessionID);
 
   res.cookie('connect.sid', sessionToken); // set session token in cookie
   console.log('50-users[]::', users);
@@ -56,7 +57,11 @@ io.use(wrap(sessionMiddleware));
 
 // connect Client '/' nsp
 io.of('/').on('connection', (socket) => {
-  console.log('59', `New socet connection ${socket.id}`);
+  console.log('59', `New socet connection ${socket.id}, ${socket.request.sessionID}`);
+  const { sessionToken } = socket.request.session;
+  let user = users.find((user) => user.sessionTokens.includes(sessionToken));
+  user.socketIds.push(socket.id);
+  console.log('63-user::', user);
 
   socket.emit('msg', `Welcome to nsp: "/" socket.id: ${socket.id} `);
 
@@ -71,8 +76,7 @@ io.of('/').on('connection', (socket) => {
     console.log('71-userSessionStore::', userSessionStore);
 
     const { sessionToken } = socket.request.session;
-
-    const user = users.find((user) => user.sessionTokens.includes(sessionToken));
+    user = users.find((user) => user.sessionTokens.includes(sessionToken));
 
     console.log('77-users::', users);
     console.log('78-user::', user);
@@ -82,7 +86,9 @@ io.of('/').on('connection', (socket) => {
       console.log('87-user.orders::', user.orders);
       console.log(`New order assigned to user: ${user.username}, Id: ${user.id}`);
       socket.to(socket.id).emit('order-msg', 'Order received.');
-      socket.emit('order-msg', 'Order received.');
+      user.socketIds.forEach((socketId) => {
+        io.to(socketId).emit('order-msg', 'Order received.');
+      });
     } else {
       console.log('User not found');
       socket.to(socket.id).emit('order-msg', 'Order denied.');
@@ -90,6 +96,8 @@ io.of('/').on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    const disconnectedSocketId = socket.id;
+    user.socketIds.console.log('103::', disconnectedUser);
     io.emit('msg', 'User left');
   });
 });
