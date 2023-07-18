@@ -18,10 +18,6 @@ const users = [];
 const connectedUsesrs = {};
 const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
 
-function generateID() {
-  return uuidv4();
-}
-
 app.use(sessionMiddleware);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -41,15 +37,33 @@ app.post('/login', (req, res) => {
   }
 
   userSessionStore.set(sessionID, user);
-  console.log('44-userSessionStore::', userSessionStore);
 
   req.session.sessionID = sessionID; // Save the authenticated user details in the session
-  console.log('47-session::', req.session, req.sessionID);
 
   res.cookie('connect.sid', sessionID); // set sessionID in cookie
-  console.log('50-users[]::', users);
-
   return res.status(200).json({ success: true, username: user.username }); // Return success response
+});
+
+app.post('/logout', async (req, res) => {
+  const sessionID = req.session.id;
+  const user = users.find((user) => user.sessionIDs.includes(sessionID));
+
+  console.log('60::', user, 'sessinoID:', sessionID, 'req.session', req.session);
+
+  req.session.destroy(() => {
+    io.in(sessionID).disconnectSockets();
+    res.status(204).end();
+  });
+
+  if (user && user.sessionIDs.length > 0) {
+    user.sessionIDs.splice(sessionID, 1);
+  }
+
+  if (user && user.sessionIDs.length === 0 && user.socketIDs.length > 0) {
+    user.socketIDs = [];
+  }
+
+  res.status(204).end();
 });
 
 io.use(wrap(sessionMiddleware));
@@ -58,8 +72,10 @@ io.of('/').on('connection', (socket) => {
   console.log('59', `New socet connection ${socket.id}, sessinID:: ${socket.request.sessionID}`);
   const { sessionID } = socket.request;
   const user = users.find((user) => user.sessionIDs.includes(sessionID));
-  user.socketIDs.push(socket.id);
-  console.log('63-user::', user);
+
+  if (user.socketIDs) {
+    user.socketIDs.push(socket.id);
+  }
 
   socket.emit('msg', `Welcome to nsp: "/" socket.id: ${socket.id} `);
 
@@ -71,15 +87,10 @@ io.of('/').on('connection', (socket) => {
   });
 
   socket.on('order', (order) => {
-    console.log('71-userSessionStore::', userSessionStore);
-    console.log('77-users::', users);
-    console.log('78-user::', user);
-
     if (user) {
       user.addOrder(order);
+      console.log(`New order assigned to user: ${user.username}, user Id: ${user.id}`);
 
-      console.log('87-user.orders::', user.orders);
-      console.log(`New order assigned to user: ${user.username}, Id: ${user.id}`);
       socket.to(socket.id).emit('order-msg', 'Order received.');
       user.socketIDs.forEach((socketId) => {
         io.to(socketId).emit('order-msg', 'Order received.');

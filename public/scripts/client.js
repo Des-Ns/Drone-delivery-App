@@ -2,6 +2,7 @@ import { Order } from './Classes/Order.js';
 
 const tableBody = document.getElementById('tbody');
 const username = sessionStorage.getItem('username');
+const usernameContainer = document.querySelector('.username');
 const usernameEl = document.getElementById('username');
 const form = document.getElementById('form');
 const productsEl = document.querySelectorAll('#product');
@@ -87,4 +88,22 @@ form.addEventListener('submit', (e) => {
   products = [];
 
   socket.emit('order', newOrder); // emit order object
+});
+
+usernameContainer.addEventListener('mouseenter', () => {
+  usernameEl.innerText = 'Logout';
+});
+
+usernameContainer.addEventListener('mouseleave', () => {
+  usernameEl.innerText = username;
+});
+
+usernameContainer.addEventListener('click', async () => {
+  try {
+    await fetch('/logout', { method: 'POST' });
+    window.location.href = 'index.html';
+    console.log('Logout ok');
+  } catch (error) {
+    console.log('Logout fail', error);
+  }
 });
