@@ -75,3 +75,8 @@ clientBtn.addEventListener('click', () => {
     }
   });
 });
+
+backdrop.addEventListener('click', () => {
+  loginForm.classList.add('hidden');
+  backdrop.classList.add('hidden');
+});

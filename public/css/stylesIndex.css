@@ -41,15 +41,15 @@ body {
   height: 20vh;
   border-radius: 5px 0 0 5px;
   background-color: var(--main-color);
-
   font-size: 1.5em;
   border-style: hidden;
 }
 
 .owner button:hover {
-  background-image: linear-gradient(to left, rgba(255, 255, 255, 0.6), transparent);
+  background-image: linear-gradient(to left, rgba(255, 255, 255, 0.4), transparent);
   font-weight: bold;
   color: #ffffffc0;
+  transition: all 0.4s ease;
 }
 
 .owner button:active {
@@ -67,9 +67,10 @@ body {
 }
 
 .client button:hover {
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.6), transparent);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.4), transparent);
   font-weight: bold;
   color: #ffffffc0;
+  transition: all 0.4s ease;
 }
 
 .client button:active {
@@ -113,6 +114,7 @@ body {
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
   cursor: pointer;
 }
+
 .login-modal.hidden {
   display: none;
 }
@@ -124,7 +126,6 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-  transition: 0.5s ease;
 }
 
 .backdrop.hidden {

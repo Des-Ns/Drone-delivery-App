@@ -7,23 +7,43 @@
     "extends": [
         "airbnb-base",
         "prettier",
-        "plugin:node/recommended"
+        "plugin:node/recommended-module"
     ],
-    "plugins": [
-        "prettier"
-    ],
+    "plugins": [],
     "overrides": [],
+    "parser": "@babel/eslint-parser",
     "parserOptions": {
-        "ecmaVersion": "latest"
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        // "requireConfigFile": false
     },
     "rules": {
-        // "prettier/prettier": "warn",
+        "node/no-unsupported-features/es-syntax": [
+            "error",
+            {
+                "version": ">=8.3.0"
+            }
+        ],
         "no-bitwise": "off",
         "no-unused-vars": "warn",
         "no-console": "off",
         "func-names": "off",
         "no-process-exit": "off",
         "object-shorthand": "off",
-        "class-methods-use-this": "off"
+        "class-methods-use-this": "off",
+        "no-restricted-syntax": "off",
+        "no-plusplus": "off",
+        "no-shadow": "warn",
+        "no-undef": "off",
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "always",
+                "jsx": "always"
+            }
+        ],
+        "no-param-reassign": "off",
+        "no-alert": "off"
     }
 }

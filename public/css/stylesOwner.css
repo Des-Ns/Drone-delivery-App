@@ -126,4 +126,7 @@ body {
   .button {
     width: 50vw;
   }
+  .title {
+    padding-top: 40px;
+  }
 }

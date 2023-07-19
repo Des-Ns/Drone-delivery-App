@@ -19,17 +19,17 @@
     <div class="container">
       <div class="warehouse-loc">
         <h2>Warehouse location at: </h2>
-        <div class="warehouses">
+        <div class="warehouses" id="warehouses">
           <h4
-            >Warehouse 1: <span class="quad">Quadrant-1</span> at
+            >Warehouse 1: at
             <span class="coords">X: 100, Y: 100</span>
           </h4>
           <h4
-            >Warehouse 2: <span class="quad">Quadrant-2</span> at
+            >Warehouse 2: at
             <span class="coords">X: 180, Y: 200</span>
           </h4>
         </div>
-        <button class="button" id="delete-warehouse">Delete warehouse</button>
+        <button id="del-btn" class="button" id="delete-warehouse">Delete warehouse</button>
       </div>
 
       <div class="add-warehouse">
@@ -42,7 +42,7 @@
           <label for="location-Y">location Y</label>
           <input id="loc-y" type="number" placeholder="Enter location on Y..." /> <br />
         </div>
-        <button class="button">Add new warehouse</button>
+        <button id="add-btn" class="button">Add new warehouse</button>
       </div>
     </div>
 

@@ -1,4 +1,4 @@
-export class Order {
+export default class Order {
   constructor(name, locX, locY, products) {
     this.products = products;
     this.name = name;

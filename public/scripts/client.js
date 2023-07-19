@@ -1,4 +1,4 @@
-import { Order } from './Classes/Order.js';
+import Order from './Classes/Order.js';
 
 const tableBody = document.getElementById('tbody');
 const username = sessionStorage.getItem('username');
@@ -54,8 +54,6 @@ socket.on('msg', (msg) => {
 
 socket.emit('joinRoom', 'client');
 
-socket.emit('Room', 'ABCD');
-
 socket.on('roomJoined', (data) => {
   console.log(data);
 });
@@ -79,15 +77,19 @@ form.addEventListener('submit', (e) => {
   const locX = e.target.locx.value;
   const locY = e.target.locy.value;
 
-  newOrder = createOrder(products, name, locX, locY);
+  if (products.length === 0) {
+    alert('Please select product.');
+  } else {
+    newOrder = createOrder(products, name, locX, locY);
 
-  productsEl.forEach((prodEl) => {
-    prodEl.classList = 'product';
-  });
-  form.reset();
-  products = [];
+    productsEl.forEach((prodEl) => {
+      prodEl.classList = 'product';
+    });
+    form.reset();
+    products = [];
 
-  socket.emit('order', newOrder); // emit order object
+    socket.emit('order', newOrder); // emit order object
+  }
 });
 
 usernameContainer.addEventListener('mouseenter', () => {
