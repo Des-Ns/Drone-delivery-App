@@ -2,9 +2,9 @@ export default class Order {
   constructor(name, locX, locY, products) {
     this.products = products;
     this.name = name;
-    this.locX = locX;
-    this.locY = locY;
+    this.location = { x: locX, y: locY };
     this.orderId = this.uuidv4();
+    this.customerId;
   }
 
   uuidv4() {

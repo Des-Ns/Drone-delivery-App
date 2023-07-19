@@ -62,6 +62,10 @@ socket.on('order-msg', (data) => {
   console.log(data);
 });
 
+socket.on('orders-table', (table) => {
+  console.log(table);
+});
+
 productsEl.forEach((prodEl) => {
   prodEl.addEventListener('click', () => {
     highliteProduct(prodEl);

@@ -1,7 +1,6 @@
 export default class Warehouse {
   constructor(coordX, coordY) {
-    this.coordX = coordX;
-    this.coordY = coordY;
+    this.location = { x: coordX, y: coordY };
     this.id = this.index();
   }
 

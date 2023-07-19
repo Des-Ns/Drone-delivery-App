@@ -30,7 +30,7 @@ socket.on('warehouse-list', (list) => {
     warehouse.innerHTML = `
     <h4>
       Warehouse '${item.id}': at
-      <span class="coords">X: ${item.coordX}, Y: ${item.coordY}</span>
+      <span class="coords">X: ${item.location.x}, Y: ${item.location.y}</span>
     </h4>
     `;
     warehousesContainer.appendChild(warehouse);

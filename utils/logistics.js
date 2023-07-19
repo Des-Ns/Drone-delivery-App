@@ -1,5 +1,5 @@
+// const { users, orders, warehouses } = require('../server.js');
 const DroneDeliveryNetwork = require('./classes/DroneDeliveryNetwork.js');
-const { users, orders, warehouseList } = require('../server..js');
 
 // const w1 = new Wherhouse(2, new Location(1, 2));
 // const w2 = new Wherhouse(2, new Location(1, 2));
@@ -18,7 +18,11 @@ const { users, orders, warehouseList } = require('../server..js');
 
 // const customerOrders = [{ location: { x: 5, y: 5 } }, { location: { x: 7, y: 8 } }];
 
-const network = new DroneDeliveryNetwork(users, orders, warehouseList);
-const totalTime = network.calculateTotalTime;
-const distance = network.calculateDistance;
-const closestWarehouse = network.findNearestWarehouse;
+function processData(users, orders, warehouses) {
+  const network = new DroneDeliveryNetwork(users, orders, warehouses);
+  const totalTime = network.calculateTotalTime();
+
+  return totalTime;
+}
+
+module.exports = { processData };

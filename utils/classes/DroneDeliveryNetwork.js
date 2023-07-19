@@ -9,14 +9,15 @@ class DroneDeliveryNetwork {
   }
 
   calculateTotalTime() {
-    const orderWithCustomerLocation = this.orders.map((order) => {
-      const customer = this.customers.find((customer) => customer.id === order.customerId);
-      const customerLocation = customer.location;
-      return { ...order, customerLocation };
+    const orderLocation = this.orders.map((order) => {
+      const location = order.location;
+      return { ...order, location };
     });
 
-    const orderWithDistances = orderWithCustomerLocation.map((order) => {
-      const distance = this.findNearestWarehouse(order.customerLocation);
+    // console.log(':: orderLocation', orderLocation);
+
+    const orderWithDistances = orderLocation.map((order) => {
+      const distance = this.findNearestWarehouse(order.location);
       return { ...order, distance };
     });
 
@@ -38,16 +39,16 @@ class DroneDeliveryNetwork {
       groupOrders = Object.values(groupOrders).map((orderGroup) =>
         orderGroup.reduce((acc, curr, index) => {
           if (index > 0) {
-            return acc + curr.distance * 2;
+            return acc + curr.distance.minDistance * 2;
           }
 
-          return acc + curr.distance;
+          return acc + curr.distance.minDistance;
         }, 0)
       );
 
       return Math.max(...groupOrders);
     }
-    return Math.max(...orderWithDistances.map((order) => order.distance));
+    return Math.max(...orderWithDistances.map((order) => order.distance.minDistance));
   }
 
   calculateDistance(location1, location2) {
@@ -65,7 +66,7 @@ class DroneDeliveryNetwork {
       const distance = this.calculateDistance(location, warehouse.location);
       if (distance < minDistance) {
         minDistance = distance;
-        nearestWarehouse = warehouse;
+        nearestWarehouse = warehouse.id;
       }
     }
 
