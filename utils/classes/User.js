@@ -1,17 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
 
 class User {
-  constructor(id, username, password, sessionID) {
-    this.id = id;
+  constructor(username, password, sessionID) {
+    this.id = uuidv4();
     this.username = username;
     this.password = password;
     this.orders = [];
     this.sessionIDs = [sessionID];
     this.socketIDs = [];
-  }
-
-  addOrder(order) {
-    this.orders.push(order);
   }
 }
 

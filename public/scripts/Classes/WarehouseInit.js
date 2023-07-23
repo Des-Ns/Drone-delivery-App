@@ -1,7 +1,9 @@
-export default class Warehouse {
-  constructor(coordX, coordY) {
+export default class WarehouseInit {
+  constructor(coordX, coordY, dronesCount) {
     this.location = { x: coordX, y: coordY };
     this.id = this.index();
+    this.dronesCount = dronesCount;
+    this.dronesStandingBy = [];
   }
 
   index() {

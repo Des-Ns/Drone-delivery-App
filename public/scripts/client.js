@@ -1,11 +1,13 @@
 import Order from './Classes/Order.js';
+import { abbreviateInput, updateTable, createTableRow } from './shared.js';
 
-const tableBody = document.getElementById('tbody');
 const username = sessionStorage.getItem('username');
 const usernameContainer = document.querySelector('.username');
 const usernameEl = document.getElementById('username');
 const form = document.getElementById('form');
 const productsEl = document.querySelectorAll('#product');
+const tableBody = document.getElementById('tbody');
+const orderRowMap = new Map();
 
 let products = [];
 let newOrder;
@@ -25,31 +27,10 @@ function createOrder(productEl, name, locX, locY) {
   return newOrder;
 }
 
-function addNewOrderToTable() {
-  const newLine = `
-  <tr>
-    <td>#4531</td>
-    <td>Domenic Jamess</td>
-    <td>135/345</td>
-    <td>95%</td>
-    <td>156 units</td>
-    <td>14 min</td>
-    <td>in progress</td>
-  </tr>
-  `;
-
-  tableBody.innerHTML += newLine;
-}
-
-// nsp ='/'
 const socket = io('http://localhost:5000/');
 
 socket.on('connect', () => {
   console.log(`Socket connected ${socket.id}`);
-});
-
-socket.on('msg', (msg) => {
-  console.log(msg);
 });
 
 socket.emit('joinRoom', 'client');
@@ -58,13 +39,19 @@ socket.on('roomJoined', (data) => {
   console.log(data);
 });
 
-socket.on('order-msg', (data) => {
-  console.log(data);
+socket.on('order-accepted', (data) => {
+  console.log(':: order-accepted =>', data);
+  createTableRow(data, tableBody, orderRowMap);
 });
 
-socket.on('orders-table', (table) => {
-  console.log(table);
+socket.on('order-update', (data) => {
+  updateTable(data, tableBody, orderRowMap);
 });
+
+// socket.on('orders-table', (tableData) => {
+//   // updateTable(tableData, tableBody, orderRowMap);
+//   console.log(tableData);
+// });
 
 productsEl.forEach((prodEl) => {
   prodEl.addEventListener('click', () => {

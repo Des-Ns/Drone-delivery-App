@@ -91,7 +91,13 @@ body {
   border-radius: 5px;
   box-shadow: var(--box-shadow);
   z-index: 10;
-  transition: 0.5s ease;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.login-modal.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .login-modal div {
@@ -115,10 +121,6 @@ body {
   cursor: pointer;
 }
 
-.login-modal.hidden {
-  display: none;
-}
-
 .backdrop {
   position: absolute;
   top: 0;
@@ -126,10 +128,13 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
+  opacity: 1;
+  transition: opacity 0.8s ease;
 }
 
 .backdrop.hidden {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
 }
 
 @media (max-width: 1400px) {

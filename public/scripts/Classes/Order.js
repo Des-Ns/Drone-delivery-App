@@ -4,7 +4,8 @@ export default class Order {
     this.name = name;
     this.location = { x: locX, y: locY };
     this.orderId = this.uuidv4();
-    this.customerId;
+    this.customerId = 0;
+    this.status = 'none';
   }
 
   uuidv4() {

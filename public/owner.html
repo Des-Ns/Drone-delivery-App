@@ -42,6 +42,10 @@
           <label for="location-Y">location Y</label>
           <input id="loc-y" type="number" placeholder="Enter location on Y..." /> <br />
         </div>
+        <div class="loc-input">
+          <label for="Drone-quantity">Drone quantity</label>
+          <input id="drone-quantity" type="number" placeholder="Enter drone quantity..." /> <br />
+        </div>
         <button id="add-btn" class="button">Add new warehouse</button>
       </div>
     </div>
@@ -61,21 +65,22 @@
             <th>Status</th>
           </tr>
         </thead>
-        <tbody class="tbody">
+        <tbody class="tbody" id="tbody">
           <tr>
-            <td>#4531</td>
+            <!-- <td>#4531</td>
             <td>Domenic james</td>
             <td>135/345</td>
             <td>95%</td>
             <td>156 units</td>
             <td>14 min</td>
-            <td>in progress</td>
+            <td>in progress</td> -->
           </tr>
         </tbody>
       </table>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
+
     <script src="./scripts/owner.js" type="module"></script>
   </body>
 </html>

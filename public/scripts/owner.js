@@ -1,4 +1,5 @@
-import Warehouse from './Classes/Warehouse.js';
+import WarehouseInit from './Classes/WarehouseInit.js';
+import { abbreviateInput, updateTable } from './shared.js';
 
 const username = sessionStorage.getItem('username');
 const usernameContainer = document.querySelector('.username');
@@ -6,20 +7,20 @@ const usernameEl = document.getElementById('username');
 const warehousesContainer = document.getElementById('warehouses');
 const inputX = document.getElementById('loc-x');
 const inputY = document.getElementById('loc-y');
+const droneQuantity = document.getElementById('drone-quantity');
 const addBtn = document.getElementById('add-btn');
 // const deleteBtn = document.getElementById('del-btn');
+const tableBody = document.getElementById('tbody');
+const orderRowMap = new Map();
 
 usernameEl.innerText = username;
 
-// nsp ='/'
+// SOCKETS
+
 const socket = io('http://localhost:5000/');
 
 socket.on('connect', () => {
   console.log(`Socket connected ${socket.id}`);
-});
-
-socket.on('msg', (msg) => {
-  console.log(msg);
 });
 
 socket.on('warehouse-list', (list) => {
@@ -30,7 +31,7 @@ socket.on('warehouse-list', (list) => {
     warehouse.innerHTML = `
     <h4>
       Warehouse '${item.id}': at
-      <span class="coords">X: ${item.location.x}, Y: ${item.location.y}</span>
+      <span class="coords">X: ${item.location.x}, Y: ${item.location.y} | Drones: ${item.dronesCount}</span>
     </h4>
     `;
     warehousesContainer.appendChild(warehouse);
@@ -43,17 +44,29 @@ socket.on('roomJoined', (data) => {
   console.log(data);
 });
 
+socket.on('order-accepted', (data) => {
+  console.log(':: order-accepted =>', data);
+  createTableRow(data, tableBody, orderRowMap);
+});
+
+socket.on('orders-table', (tableData) => {
+  updateTable(tableData, tableBody, orderRowMap);
+  console.log(tableData);
+});
+
 addBtn.addEventListener('click', () => {
-  if (inputX.value !== '' && inputY.value !== '') {
-    const coordX = inputX.value;
-    const coordY = inputY.value;
-    const newWarehouse = new Warehouse(coordX, coordY);
-    console.log(coordX, coordY, newWarehouse);
+  if (inputX.value !== '' && inputY.value !== '' && droneQuantity.value !== '') {
+    const coordX = parseInt(inputX.value, 10);
+    const coordY = parseInt(inputY.value, 10);
+    const dronesCount = parseInt(droneQuantity.value, 10);
+    console.log(typeof dronesCount);
+    const newWarehouse = new WarehouseInit(coordX, coordY, dronesCount);
 
     socket.emit('add-warehouse', newWarehouse);
 
     inputX.value = '';
     inputY.value = '';
+    droneQuantity.value = '';
   } else {
     alert('please input coordinates');
   }
