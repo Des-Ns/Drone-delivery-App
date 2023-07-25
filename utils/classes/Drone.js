@@ -1,7 +1,9 @@
+const EventEmitter = require('events');
 const { v4: uuidv4 } = require('uuid');
 
-class Drone {
+class Drone extends EventEmitter {
   constructor(warehouseId) {
+    super();
     this.id = uuidv4();
     this.order = [];
     this.ordersDelivered = [];
@@ -16,7 +18,7 @@ class Drone {
     return { totalDistance, distanceToCustomer };
   }
 
-  countdownDelivery(distanceToCustomer, closestWarehouse, progressUpdate, onComplete) {
+  countdownDelivery(distanceToCustomer, progressUpdate, onComplete) {
     let deliveryTime = distanceToCustomer;
 
     const toCustomer = setInterval(() => {
@@ -36,7 +38,7 @@ class Drone {
         this.order.splice(0, 1);
         console.log('::36-Drone> Order Complete');
 
-        this.countdownReturn(distanceToCustomer, closestWarehouse, onComplete);
+        this.countdownReturn(distanceToCustomer, onComplete);
       } else {
         progressUpdate({
           orderId: this.order[0].orderId,
@@ -47,16 +49,16 @@ class Drone {
     }, 500);
   }
 
-  countdownReturn(distanceToCustomer, closestWarehouse, onComplete) {
+  countdownReturn(distanceToCustomer) {
     let returnTime = distanceToCustomer;
-    this.closestWarehouse = closestWarehouse;
+    // this.closestWarehouse = closestWarehouse;
 
     const toWarehouse = setInterval(() => {
       returnTime -= 0.5;
       if (returnTime <= 0) {
         clearInterval(toWarehouse);
         this.availableStatus = true;
-        onComplete();
+        this.emit('countdownReturnCompleted');
       }
       console.log('::51 returnTime =>', returnTime);
     }, 500);

@@ -72,7 +72,7 @@ function setupSockets(io, users) {
         const closestWarehouse = warehouses.find(
           (warehouse) => warehouse.id === closestWarehouseFound.id
         );
-        closestWarehouse.orderRecieved(order, closestWarehouse);
+        closestWarehouse.orderRecieved(order);
         user.orders.push(order);
         orders.push(order);
 
@@ -88,16 +88,20 @@ function setupSockets(io, users) {
         if (dispatchedDrone) {
           dispatchedDrone.countdownDelivery(
             closestWarehouseFound.minDistance,
-            closestWarehouse,
             (progressData) => {
               io.emit('order-update', progressData);
             },
             () => {
               console.log('Countdown Return - Done');
-              closestWarehouse.clearDroneInTransitArray();
+
               dispatchedDrone.closestWarehouse = null;
             }
           );
+
+          // EventEmmiter =>
+          dispatchedDrone.on('countdownReturnCompleted', () => {
+            closestWarehouse.clearDroneInTransitArray();
+          });
           setInterval(() => {
             console.log(':: 101 WH-orderHystory => ', closestWarehouse.orderHistory);
             console.log(':: 102 dispatchedDrone => ', dispatchedDrone);

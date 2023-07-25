@@ -14,9 +14,9 @@ class Warehouse {
     return `W-${index}`;
   }
 
-  orderRecieved(order, closestWarehouse) {
+  orderRecieved(order) {
     order.status = 'Accepted';
-    closestWarehouse.ordersActive.push(order);
+    this.ordersActive.push(order);
   }
 
   dispatchDrone() {
