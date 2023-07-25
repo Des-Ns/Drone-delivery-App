@@ -1,24 +1,8 @@
-class DroneDeliveryNetwork {
+class Network {
   constructor(users, orders, warehouses) {
     this.warehouses = warehouses;
     this.customers = users;
     this.orders = orders;
-  }
-
-  calculateOrderDistance(order, callback) {
-    const orderWithDistance = {
-      ...order,
-      distance: this.findNearestWarehouse(order.location),
-    };
-    const bestDistance = orderWithDistance.distance.minDistance;
-
-    order.distance = bestDistance;
-    order.time = bestDistance;
-    order.timer = null;
-
-    console.log(':: 27 orderWithDistance =>', orderWithDistance);
-
-    callback(order);
   }
 
   calculateDistance(location1, location2) {
@@ -42,17 +26,25 @@ class DroneDeliveryNetwork {
 
     return { minDistance, id };
   }
-
-  markOrderAsCompleted(orderId) {
-    const completedOrder = this.orders.find((order) => order.orderId === orderId);
-    if (completedOrder) {
-      completedOrder.status = 'completed';
-    }
-    return completedOrder;
-  }
 }
 
-module.exports = DroneDeliveryNetwork;
+module.exports = Network;
+
+// calculateOrderDistance(order, callback) {
+//   const orderWithDistance = {
+//     ...order,
+//     distance: this.findNearestWarehouse(order.location),
+//   };
+//   const bestDistance = orderWithDistance.distance.minDistance;
+
+//   order.distance = bestDistance;
+//   order.time = bestDistance;
+//   order.timer = null;
+
+//   console.log(':: 27 orderWithDistance =>', orderWithDistance);
+
+//   callback(order);
+// }
 
 // calculateTotalLocation() {
 //   const orderLocation = this.orders.map((order) => {
@@ -60,4 +52,12 @@ module.exports = DroneDeliveryNetwork;
 //     return { ...order, location };
 //   });
 //   console.log(':: orderLocation =>', orderLocation);
+// }
+
+// markOrderAsCompleted(orderId) {
+//   const completedOrder = this.orders.find((order) => order.orderId === orderId);
+//   if (completedOrder) {
+//     completedOrder.status = 'completed';
+//   }
+//   return completedOrder;
 // }

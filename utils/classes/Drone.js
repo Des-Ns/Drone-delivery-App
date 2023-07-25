@@ -1,12 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
 
 class Drone {
-  constructor() {
+  constructor(warehouseId) {
     this.id = uuidv4();
     this.order = [];
     this.ordersDelivered = [];
-    // this.totalDistance = this.totalDistance(this.distance);
     this.availableStatus = true;
+    this.warehouseId = warehouseId;
+    this.closestWarehouse = null;
   }
 
   distances(distance) {
@@ -15,34 +16,49 @@ class Drone {
     return { totalDistance, distanceToCustomer };
   }
 
-  countdown(distanceToCustomer, dispatchedDrone, totalDistance, progressUpdate) {
+  countdownDelivery(distanceToCustomer, closestWarehouse, progressUpdate, onComplete) {
     let deliveryTime = distanceToCustomer;
-    let returnTime = totalDistance / 2;
 
     const toCustomer = setInterval(() => {
       deliveryTime -= 0.5;
-      dispatchedDrone.availableStatus = false;
+      this.availableStatus = false;
+      console.log('::25 deliveryTime =>', deliveryTime);
 
       if (deliveryTime <= 0) {
-        clearInterval(toCustomer);
-        dispatchedDrone.order[0].status = 'Completed';
-        dispatchedDrone.ordersDelivered.push(dispatchedDrone.order[0]);
-        dispatchedDrone.order.splice(0, 1);
-      }
+        progressUpdate({
+          orderId: this.order[0].orderId,
+          status: (this.order[0].status = 'Completed'),
+          time: 0,
+        });
 
-      progressUpdate({
-        orderId: dispatchedDrone.order[0].orderId,
-        status: dispatchedDrone.order[0].status,
-        time: deliveryTime,
-      });
+        clearInterval(toCustomer);
+        this.ordersDelivered.push(this.order[0]);
+        this.order.splice(0, 1);
+        console.log('::36-Drone> Order Complete');
+
+        this.countdownReturn(distanceToCustomer, closestWarehouse, onComplete);
+      } else {
+        progressUpdate({
+          orderId: this.order[0].orderId,
+          status: this.order[0].status,
+          time: deliveryTime,
+        });
+      }
     }, 500);
+  }
+
+  countdownReturn(distanceToCustomer, closestWarehouse, onComplete) {
+    let returnTime = distanceToCustomer;
+    this.closestWarehouse = closestWarehouse;
 
     const toWarehouse = setInterval(() => {
-      returnTime -= 5;
+      returnTime -= 0.5;
       if (returnTime <= 0) {
         clearInterval(toWarehouse);
         this.availableStatus = true;
+        onComplete();
       }
+      console.log('::51 returnTime =>', returnTime);
     }, 500);
   }
 }

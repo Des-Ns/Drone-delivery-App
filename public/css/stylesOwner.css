@@ -57,6 +57,19 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+.warehouse {
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.warehouse.active {
+  border: 2px solid var(--main-color);
+  border-radius: 5px;
+  transform: scale(1.04);
+  transition: all 0.2s ease;
+}
+
 .button {
   font-size: 18px;
   color: #fff;

@@ -19,26 +19,53 @@ class Warehouse {
     closestWarehouse.ordersActive.push(order);
   }
 
-  droneStatus(drone) {
-    if (drone.availableStatus === false) {
-      this.dronesInTransit.push(drone);
-    }
-    this.dronesStandingBy.push(drone);
-  }
-
-  dispatchDrone(closestWarehouse) {
-    if (closestWarehouse.ordersActive.length > 0 && closestWarehouse.dronesStandingBy.length > 0) {
-      const dispatchedDrone = closestWarehouse.dronesStandingBy.shift();
-      const currOrder = closestWarehouse.ordersActive.shift();
+  dispatchDrone() {
+    if (this.ordersActive.length > 0 && this.dronesStandingBy.length > 0) {
+      const dispatchedDrone = this.dronesStandingBy.shift();
+      const currOrder = this.ordersActive.shift();
       currOrder.status = 'Delivering';
       dispatchedDrone.order.push(currOrder);
       dispatchedDrone.availableStatus = false;
-      closestWarehouse.dronesInTransit.push(dispatchedDrone);
-      closestWarehouse.orderHistory.push(currOrder);
+      this.dronesInTransit.push(dispatchedDrone);
+      this.orderHistory.push(currOrder);
       return dispatchedDrone;
     }
     return 'No drones available';
   }
+
+  clearDroneInTransitArray() {
+    const readyDrones = this.dronesInTransit.filter((drone) => drone.availableStatus === true);
+    this.dronesStandingBy.push(...readyDrones);
+    this.dronesInTransit = this.dronesInTransit.filter((drone) => drone.availableStatus === false);
+  }
 }
 
 module.exports = Warehouse;
+
+// dispatchDrone(closestWarehouse) {
+//   if (closestWarehouse.ordersActive.length > 0 && closestWarehouse.dronesStandingBy.length > 0) {
+//     const dispatchedDrone = closestWarehouse.dronesStandingBy.shift();
+//     const currOrder = closestWarehouse.ordersActive.shift();
+//     currOrder.status = 'Delivering';
+//     dispatchedDrone.order.push(currOrder);
+//     dispatchedDrone.availableStatus = false;
+//     closestWarehouse.dronesInTransit.push(dispatchedDrone);
+//     closestWarehouse.orderHistory.push(currOrder);
+//     return dispatchedDrone;
+//   }
+//   return 'No drones available';
+// }
+
+// clearDroneInTransitArray(closestWarehouse) {
+//   const readyDrones = closestWarehouse.dronesInTransit.filter(
+//     (drone) => drone.availableStatus === true
+//   );
+//   closestWarehouse.dronesStandingBy.push(...readyDrones);
+// }
+
+// droneStatus(drone) {
+//   if (drone.availableStatus === false) {
+//     this.dronesInTransit.push(drone);
+//   }
+//   this.dronesStandingBy.push(drone);
+// }

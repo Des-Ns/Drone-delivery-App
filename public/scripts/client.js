@@ -1,5 +1,5 @@
 import Order from './Classes/Order.js';
-import { abbreviateInput, updateTable, createTableRow } from './shared.js';
+import { updateTable, createTableRow, highlightElement } from './shared.js';
 
 const username = sessionStorage.getItem('username');
 const usernameContainer = document.querySelector('.username');
@@ -13,14 +13,6 @@ let products = [];
 let newOrder;
 
 usernameEl.innerText = username;
-
-function highliteProduct(prodEl) {
-  if (prodEl.classList.contains('active')) {
-    prodEl.classList.remove('active');
-    return;
-  }
-  prodEl.classList.add('active');
-}
 
 function createOrder(productEl, name, locX, locY) {
   newOrder = new Order(name, locX, locY, productEl);
@@ -48,14 +40,9 @@ socket.on('order-update', (data) => {
   updateTable(data, tableBody, orderRowMap);
 });
 
-// socket.on('orders-table', (tableData) => {
-//   // updateTable(tableData, tableBody, orderRowMap);
-//   console.log(tableData);
-// });
-
 productsEl.forEach((prodEl) => {
   prodEl.addEventListener('click', () => {
-    highliteProduct(prodEl);
+    highlightElement(prodEl);
     products.push(prodEl.getAttribute('data-value'));
     return prodEl;
   });

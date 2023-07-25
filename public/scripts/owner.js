@@ -1,17 +1,20 @@
 import WarehouseInit from './Classes/WarehouseInit.js';
-import { abbreviateInput, updateTable } from './shared.js';
+import { updateTable, highlightElement } from './shared.js';
 
 const username = sessionStorage.getItem('username');
 const usernameContainer = document.querySelector('.username');
 const usernameEl = document.getElementById('username');
-const warehousesContainer = document.getElementById('warehouses');
+let warehousesContainer = document.getElementById('warehouses');
+const warehouseEls = document.querySelectorAll('.warehouse');
 const inputX = document.getElementById('loc-x');
 const inputY = document.getElementById('loc-y');
 const droneQuantity = document.getElementById('drone-quantity');
 const addBtn = document.getElementById('add-btn');
-// const deleteBtn = document.getElementById('del-btn');
+const deleteBtn = document.getElementById('del-btn');
 const tableBody = document.getElementById('tbody');
 const orderRowMap = new Map();
+console.log(warehouseEls);
+const warehouses = [];
 
 usernameEl.innerText = username;
 
@@ -27,11 +30,11 @@ socket.on('warehouse-list', (list) => {
   console.log(list);
   warehousesContainer.innerHTML = '';
   list.forEach((item) => {
+    warehouses.push(item);
     const warehouse = document.createElement('h4');
     warehouse.innerHTML = `
-    <h4>
-      Warehouse '${item.id}': at
-      <span class="coords">X: ${item.location.x}, Y: ${item.location.y} | Drones: ${item.dronesCount}</span>
+    <h4 class="warehouse" data-value="${item.id}">
+      Warehouse '${item.id}': at X: ${item.location.x}, Y: ${item.location.y} | Drones: ${item.dronesCount}
     </h4>
     `;
     warehousesContainer.appendChild(warehouse);
@@ -49,9 +52,8 @@ socket.on('order-accepted', (data) => {
   createTableRow(data, tableBody, orderRowMap);
 });
 
-socket.on('orders-table', (tableData) => {
-  updateTable(tableData, tableBody, orderRowMap);
-  console.log(tableData);
+socket.on('order-update', (data) => {
+  updateTable(data, tableBody, orderRowMap);
 });
 
 addBtn.addEventListener('click', () => {
@@ -70,6 +72,31 @@ addBtn.addEventListener('click', () => {
   } else {
     alert('please input coordinates');
   }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  warehousesContainer = document.getElementById('warehouses');
+
+  warehousesContainer.addEventListener('click', (event) => {
+    if (event.target.classList.contains('warehouse')) {
+      const warehouse = event.target;
+      const isSelected = warehouse.getAttribute('data-selected') === 'true';
+      warehouse.setAttribute('data-selected', isSelected ? 'false' : 'true');
+      highlightElement(warehouse);
+    }
+  });
+
+  deleteBtn.addEventListener('click', () => {
+    const selectedWarehouses = document.querySelectorAll('.warehouse[data-selected="true"]');
+    console.log(selectedWarehouses);
+
+    const warehousesIdsToDelete = Array.from(selectedWarehouses).map((warehouse) =>
+      warehouse.getAttribute('data-value')
+    );
+    console.log(warehousesIdsToDelete);
+
+    socket.emit('remove-warehouse', warehousesIdsToDelete);
+  });
 });
 
 usernameContainer.addEventListener('mouseenter', () => {

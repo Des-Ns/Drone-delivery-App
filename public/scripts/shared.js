@@ -10,7 +10,7 @@ export function abbreviateInput(input) {
 
 export function createTableRow(data, tableBody, orderRowMap) {
   const newRow = document.createElement('tr');
-  // newRow.id = `order-${data.orderId}`;
+
   newRow.innerHTML = `
         <td>#${abbreviateInput(data.orderId)}</td>
         <td>${data.name}</td>
@@ -38,8 +38,16 @@ export function updateTable(data, tableBody, orderRowMap) {
   statusCell.textContent = data.status; // === 'completed' ? 'completed' : 'in progress';
 
   // Remove order
-  if (data.status === 'completed') {
-    tableBody.removeChild(existingRow);
-    orderRowMap.delete(orderId);
+  // if (data.status === 'Completed') {
+  //   tableBody.removeChild(existingRow);
+  //   orderRowMap.delete(orderId);
+  // }
+}
+
+export function highlightElement(element) {
+  if (element.classList.contains('active')) {
+    element.classList.remove('active');
+    return;
   }
+  element.classList.add('active');
 }

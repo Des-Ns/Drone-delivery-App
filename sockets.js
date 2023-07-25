@@ -1,31 +1,18 @@
 const { sessionMiddleware, wrap } = require('./controlers/serverControler.js');
-const Delivery = require('./utils/classes/Delivery.js');
+const Network = require('./utils/classes/Network.js');
 const Drone = require('./utils/classes/Drone.js');
 const Warehouse = require('./utils/classes/Warehouse.js');
 
 const orders = [];
-const ordersHistory = [];
-const warehouses = [
-  new Warehouse(93, 140, 'W-11', 5, [
-    new Drone(),
-    new Drone(),
-    new Drone(),
-    new Drone(),
-    new Drone(),
-  ]),
-  new Warehouse(186, 140, 'W-12', 5, [
-    new Drone(),
-    new Drone(),
-    new Drone(),
-    new Drone(),
-    new Drone(),
-  ]),
+let warehouses = [
+  new Warehouse(93, 140, 'W-11', 3, [new Drone('W-11'), new Drone('W-11'), new Drone('W-11')]),
+  new Warehouse(186, 140, 'W-12', 3, [new Drone('W-12'), new Drone('W-12'), new Drone('W-12')]),
 ];
 // const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
 
 function setupSockets(io, users) {
   io.use(wrap(sessionMiddleware));
-  const network = new Delivery(users, orders, warehouses);
+  const networkUtil = new Network(users, orders, warehouses);
 
   io.of('/').on('connection', (socket) => {
     console.log(
@@ -69,11 +56,17 @@ function setupSockets(io, users) {
       io.to('owner').emit('warehouse-list', warehouses);
     });
 
+    socket.on('remove-warehouse', (warehouseIdsToRemove) => {
+      warehouses = warehouses.filter((warehouse) => !warehouseIdsToRemove.includes(warehouse.id));
+
+      io.to('owner').emit('warehouse-list', warehouses);
+    });
+
     socket.on('order', (order) => {
       console.log(':: 77 order =>', order);
       if (user) {
         order.customerId = user.id;
-        const closestWarehouseFound = network.findNearestWarehouse(order.location);
+        const closestWarehouseFound = networkUtil.findNearestWarehouse(order.location);
         order.distance = closestWarehouseFound.minDistance;
         console.log(':: closestFound =>', closestWarehouseFound);
         const closestWarehouse = warehouses.find(
@@ -82,7 +75,6 @@ function setupSockets(io, users) {
         closestWarehouse.orderRecieved(order, closestWarehouse);
         user.orders.push(order);
         orders.push(order);
-        ordersHistory.push(order);
 
         console.log(`New order assigned to user: ${user.username}, user Id: ${user.id}`);
         console.log(':: 99 order =>', order);
@@ -91,55 +83,28 @@ function setupSockets(io, users) {
           io.to(socketId).emit('order-accepted', order);
         });
 
-        const dispatchedDrone = closestWarehouse.dispatchDrone(closestWarehouse);
+        const dispatchedDrone = closestWarehouse.dispatchDrone();
 
         if (dispatchedDrone) {
-          dispatchedDrone.countdown(
+          dispatchedDrone.countdownDelivery(
             closestWarehouseFound.minDistance,
-            dispatchedDrone,
-            dispatchedDrone.distances(closestWarehouseFound.minDistance),
+            closestWarehouse,
             (progressData) => {
               io.emit('order-update', progressData);
+            },
+            () => {
+              console.log('Countdown Return - Done');
+              closestWarehouse.clearDroneInTransitArray();
+              dispatchedDrone.closestWarehouse = null;
             }
           );
+          setInterval(() => {
+            console.log(':: 101 WH-orderHystory => ', closestWarehouse.orderHistory);
+            console.log(':: 102 dispatchedDrone => ', dispatchedDrone);
+          }, 2000);
         } else {
           console.log('No available drone to dispatch.');
         }
-        // =====================================
-
-        // network.calculateOrderDistance(order, (orderWithTime) => {
-        //   // Emit the order data with the timer to the client, including the initial countdown value
-        //   console.log('::98 network => ', network);
-        //   io.emit('orders-table', orderWithTime);
-        //   console.log('::62 orderWithTime =>', orderWithTime);
-
-        //   let deliveryTime = orderWithTime.time;
-        //   orderWithTime.timer = setInterval(() => {
-        //     deliveryTime -= 0.5;
-        //     if (deliveryTime <= 0) {
-        //       clearInterval(orderWithTime.timer);
-        //       console.log('Order completed:', orderWithTime.orderId);
-        //       order.timer = null;
-
-        //       network.markOrderAsCompleted(order.orderId);
-        //       console.log(order.status);
-        //       // Remove the completed order from the orders array
-        //       const index = orders.indexOf(orderWithTime);
-        //       orders.splice(index, 1);
-        //       // if (index > -1) {
-        //       //   orders.splice(index, 1);
-        //       // }
-        //       // Emit the updated orders table to the client without the completed order
-        //       io.emit('orders-table', orderWithTime);
-        //     } else {
-        //       console.log('Time left:', deliveryTime);
-        //       // Update the countdown time in the orderWithTime object
-        //       orderWithTime.time = deliveryTime;
-        //       // Emit the updated order data with the countdown time to the client
-        //       io.emit('orders-table', orderWithTime);
-        //     }
-        //   }, 500);
-        // });
       } else {
         console.log('User not found');
         socket.to(socket.id).emit('order-msg', 'Order denied.');
