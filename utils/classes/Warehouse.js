@@ -30,16 +30,16 @@ class Warehouse {
     }
     return 'No drones available';
   }
-
-  clearDroneInTransitArray(droneId) {
-    const readyDrones = this.dronesInTransit.filter((drone) => drone === droneId);
-    const droneToRemove = this.dronesInTransit.findIndex((id) => id === droneId);
-    this.dronesStandingBy.push(...readyDrones);
-    this.dronesInTransit.splice(droneToRemove, 1);
-  }
 }
 
 module.exports = Warehouse;
+
+// clearDroneInTransitArray(droneId) {
+//   const readyDrones = this.dronesInTransit.filter((drone) => drone === droneId);
+//   const droneToRemove = this.dronesInTransit.findIndex((id) => id === droneId);
+//   this.dronesStandingBy.push(...readyDrones);
+//   this.dronesInTransit.splice(droneToRemove, 1);
+// }
 
 // dispatchDrone(closestWarehouse) {
 //   if (closestWarehouse.ordersActive.length > 0 && closestWarehouse.dronesStandingBy.length > 0) {

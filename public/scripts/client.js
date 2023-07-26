@@ -8,9 +8,6 @@ const form = document.getElementById('form');
 const productsEl = document.querySelectorAll('#product');
 const tableBody = document.getElementById('tbody');
 const orderRowMap = new Map();
-setInterval(() => {
-  console.log(orderRowMap);
-}, 1000);
 
 let products = [];
 let newOrder;

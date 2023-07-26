@@ -4,8 +4,8 @@ const Drone = require('./utils/classes/Drone.js');
 const Warehouse = require('./utils/classes/Warehouse.js');
 
 const orders = [];
-let warehouses = [new Warehouse(93, 140, 'W-11', 3, []), new Warehouse(186, 140, 'W-12', 3, [])];
-const drones = [];
+const warehouses = [new Warehouse(93, 140, 'W-11', 3, []), new Warehouse(186, 140, 'W-12', 3, [])];
+let drones = [];
 // const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
 
 warehouses.forEach((warehouse) => {
@@ -17,7 +17,7 @@ warehouses.forEach((warehouse) => {
 
 function setupSockets(io, users) {
   io.use(wrap(sessionMiddleware));
-  const networkUtil = new Network(users, orders, warehouses);
+  const network = new Network(warehouses, drones, users, orders);
 
   io.of('/').on('connection', (socket) => {
     console.log(
@@ -43,7 +43,7 @@ function setupSockets(io, users) {
     });
 
     socket.on('add-warehouse', (newWarehouse) => {
-      console.log('::49 newWarehouse =>', newWarehouse);
+      console.log('::46 newWarehouse =>', newWarehouse);
       warehouses.push(
         new Warehouse(
           newWarehouse.location.x,
@@ -64,8 +64,13 @@ function setupSockets(io, users) {
     });
 
     socket.on('remove-warehouse', (warehouseIdsToRemove) => {
-      warehouses = warehouses.filter((warehouse) => !warehouseIdsToRemove.includes(warehouse.id));
-      // remove warehousees drones !
+      console.log(warehouseIdsToRemove);
+      const indexOfWarehouseToDel = warehouses.findIndex(
+        (warehouse) => warehouse.id === warehouseIdsToRemove
+      );
+      drones = drones.filter((drone) => !warehouseIdsToRemove.includes(drone.warehouseId));
+      warehouses.splice(indexOfWarehouseToDel, 1);
+
       io.to('owner').emit('warehouse-list', warehouses);
     });
 
@@ -73,15 +78,9 @@ function setupSockets(io, users) {
       console.log(':: 73 order =>', order);
       if (user) {
         order.customerId = user.id;
-        const closestWarehouseFound = networkUtil.findNearestWarehouse(order.location);
-        order.distance = closestWarehouseFound.minDistance;
-        console.log('::78 closestFound =>', closestWarehouseFound);
-        const closestWarehouse = warehouses.find(
-          (warehouse) => warehouse.id === closestWarehouseFound.id
-        );
-        closestWarehouse.orderRecieved(order); // status = Accepted + store order.id
         user.orders.push(order.id);
         orders.push(order);
+        const wH = network.orderAcceptHandler(order);
 
         console.log(`New order assigned to user: ${user.username}, user Id: ${user.id}`);
         console.log(':: 99 order =>', order);
@@ -90,31 +89,28 @@ function setupSockets(io, users) {
           io.to(socketId).emit('order-accepted', order);
         });
 
-        const currDroneAndOrderIds = closestWarehouse.dispatchDrone();
+        const currDroneAndOrderIds = wH.closestWarehouse.dispatchDrone();
         console.log('::98 currDroneAndOrderIds => ', currDroneAndOrderIds);
         const currDrone = drones.find(
           (drone) => drone.id === currDroneAndOrderIds.dispatchedDroneId
         );
-        // currDrone.orderActiveIds.push(currDroneAndOrderIds.currOrderId);
 
         if (currDrone) {
-          currDrone.countdownDelivery(
+          network.countdownDelivery(
+            currDrone,
             order.status,
             currDroneAndOrderIds.currOrderId,
-            closestWarehouseFound.minDistance,
+            wH.closestWarehouseFound.minDistance,
             (progressData) => {
               io.emit('order-update', progressData);
             }
           );
 
-          // EventEmmiter =>
-          currDrone.on('countdownReturnCompleted', () => {
-            closestWarehouse.clearDroneInTransitArray(currDrone.id);
-          });
+          network.clearDroneInTransitArray(currDrone.id, wH.closestWarehouse);
 
           setInterval(() => {
-            console.log(':: 116 WH-orderHystory => ', closestWarehouse);
-            console.log(':: 117 WH-orderHystory => ', closestWarehouse.orderHistory);
+            console.log(':: 116 WH-orderHystory => ', wH.closestWarehouse);
+            console.log(':: 117 WH-orderHystory => ', wH.closestWarehouse.orderHistory);
             console.log(':: 118 currDrone => ', currDrone);
           }, 2000);
         } else {
