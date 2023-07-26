@@ -12,7 +12,7 @@ export function createTableRow(data, tableBody, orderRowMap) {
   const newRow = document.createElement('tr');
 
   newRow.innerHTML = `
-        <td>#${abbreviateInput(data.orderId)}</td>
+        <td>#${abbreviateInput(data.id)}</td>
         <td>${data.name}</td>
         <td>${data.location.x}/${data.location.y}</td>
         <td>#${abbreviateInput(data.customerId)}</td>
@@ -22,14 +22,14 @@ export function createTableRow(data, tableBody, orderRowMap) {
       `;
 
   tableBody.appendChild(newRow);
-  orderRowMap.set(data.orderId, newRow);
+  orderRowMap.set(data.id, newRow);
 }
 
 export function updateTable(data, tableBody, orderRowMap) {
   console.log(data);
 
-  const { orderId } = data;
-  const existingRow = orderRowMap.get(orderId);
+  const { id } = data;
+  const existingRow = orderRowMap.get(id);
 
   const timeCell = existingRow.cells[5];
   const statusCell = existingRow.cells[6];
@@ -40,7 +40,7 @@ export function updateTable(data, tableBody, orderRowMap) {
   // Remove order
   // if (data.status === 'Completed') {
   //   tableBody.removeChild(existingRow);
-  //   orderRowMap.delete(orderId);
+  //   orderRowMap.delete(id);
   // }
 }
 

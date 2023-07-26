@@ -1,42 +1,41 @@
 class Warehouse {
-  constructor(coordX, coordY, id, droneQuantity, dronesStandingBy) {
+  constructor(coordX, coordY, id, droneQuantity, dronesIds) {
     this.location = { x: coordX, y: coordY };
     this.id = id;
     this.ordersActive = [];
     this.orderHistory = [];
     this.dronesCount = droneQuantity;
-    this.dronesStandingBy = dronesStandingBy;
+    this.dronesStandingBy = dronesIds;
     this.dronesInTransit = [];
   }
 
-  id() {
+  idGen() {
     const index = Math.floor(Math.random() * 10) + 1; // for test only
     return `W-${index}`;
   }
 
   orderRecieved(order) {
     order.status = 'Accepted';
-    this.ordersActive.push(order);
+    this.ordersActive.push(order.id);
   }
 
   dispatchDrone() {
     if (this.ordersActive.length > 0 && this.dronesStandingBy.length > 0) {
-      const dispatchedDrone = this.dronesStandingBy.shift();
-      const currOrder = this.ordersActive.shift();
-      currOrder.status = 'Delivering';
-      dispatchedDrone.order.push(currOrder);
-      dispatchedDrone.availableStatus = false;
-      this.dronesInTransit.push(dispatchedDrone);
-      this.orderHistory.push(currOrder);
-      return dispatchedDrone;
+      const dispatchedDroneId = this.dronesStandingBy.shift();
+      const currOrderId = this.ordersActive.shift();
+      this.dronesInTransit.push(dispatchedDroneId);
+      this.orderHistory.push(currOrderId);
+
+      return { dispatchedDroneId, currOrderId };
     }
     return 'No drones available';
   }
 
-  clearDroneInTransitArray() {
-    const readyDrones = this.dronesInTransit.filter((drone) => drone.availableStatus === true);
+  clearDroneInTransitArray(droneId) {
+    const readyDrones = this.dronesInTransit.filter((drone) => drone === droneId);
+    const droneToRemove = this.dronesInTransit.findIndex((id) => id === droneId);
     this.dronesStandingBy.push(...readyDrones);
-    this.dronesInTransit = this.dronesInTransit.filter((drone) => drone.availableStatus === false);
+    this.dronesInTransit.splice(droneToRemove, 1);
   }
 }
 

@@ -5,11 +5,10 @@ class Drone extends EventEmitter {
   constructor(warehouseId) {
     super();
     this.id = uuidv4();
-    this.order = [];
+    this.orderActiveIds = [];
     this.ordersDelivered = [];
     this.availableStatus = true;
     this.warehouseId = warehouseId;
-    this.closestWarehouse = null;
   }
 
   distances(distance) {
@@ -18,32 +17,49 @@ class Drone extends EventEmitter {
     return { totalDistance, distanceToCustomer };
   }
 
-  countdownDelivery(distanceToCustomer, progressUpdate, onComplete) {
+  countdownDelivery(orderStatus, currOrderId, distanceToCustomer, progressDataUpdate) {
+    this.orderActiveIds.push(currOrderId);
     let deliveryTime = distanceToCustomer;
+    this.availableStatus = false;
 
-    const toCustomer = setInterval(() => {
+    const transitToCustomer = setInterval(() => {
       deliveryTime -= 0.5;
-      this.availableStatus = false;
       console.log('::25 deliveryTime =>', deliveryTime);
 
       if (deliveryTime <= 0) {
-        progressUpdate({
-          orderId: this.order[0].orderId,
-          status: (this.order[0].status = 'Completed'),
-          time: 0,
+        this.orderActiveIds.forEach((orderId) => {
+          if (orderId === currOrderId) {
+            progressDataUpdate({
+              id: orderId,
+              status: 'Completed',
+              time: ' - ',
+            });
+          } else {
+            progressDataUpdate({
+              id: orderId,
+              status: 'Delivering',
+              time: deliveryTime,
+            });
+          }
         });
 
-        clearInterval(toCustomer);
-        this.ordersDelivered.push(this.order[0]);
-        this.order.splice(0, 1);
+        clearInterval(transitToCustomer);
+        const completedOrderId = this.orderActiveIds.filter((orderId) => orderId === currOrderId);
+        const indexForDelete = this.orderActiveIds.indexOf(completedOrderId);
+        this.orderActiveIds.splice(indexForDelete, 1);
+        this.ordersDelivered.push(...completedOrderId);
+
         console.log('::36-Drone> Order Complete');
 
-        this.countdownReturn(distanceToCustomer, onComplete);
+        this.countdownReturn(distanceToCustomer);
       } else {
-        progressUpdate({
-          orderId: this.order[0].orderId,
-          status: this.order[0].status,
-          time: deliveryTime,
+        // Update the status of all active orders
+        this.orderActiveIds.forEach((orderId) => {
+          progressDataUpdate({
+            id: orderId,
+            status: 'Delivering',
+            time: deliveryTime,
+          });
         });
       }
     }, 500);
@@ -51,12 +67,11 @@ class Drone extends EventEmitter {
 
   countdownReturn(distanceToCustomer) {
     let returnTime = distanceToCustomer;
-    // this.closestWarehouse = closestWarehouse;
 
-    const toWarehouse = setInterval(() => {
+    const transitToWarehouse = setInterval(() => {
       returnTime -= 0.5;
       if (returnTime <= 0) {
-        clearInterval(toWarehouse);
+        clearInterval(transitToWarehouse);
         this.availableStatus = true;
         this.emit('countdownReturnCompleted');
       }

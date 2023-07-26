@@ -3,7 +3,7 @@ export default class Order {
     this.products = products;
     this.name = name;
     this.location = { x: locX, y: locY };
-    this.orderId = this.uuidv4();
+    this.id = this.uuidv4();
     this.customerId = 0;
     this.status = 'none';
   }
