@@ -1,5 +1,5 @@
 import WarehouseInit from './Classes/WarehouseInit.js';
-import { updateTable, highlightElement } from './shared.js';
+import { updateTable, createTableRow, highlightElement } from './shared.js';
 
 const username = sessionStorage.getItem('username');
 const usernameContainer = document.querySelector('.username');
@@ -13,7 +13,7 @@ const addBtn = document.getElementById('add-btn');
 const deleteBtn = document.getElementById('del-btn');
 const tableBody = document.getElementById('tbody');
 const orderRowMap = new Map();
-console.log(warehouseEls);
+
 const warehouses = [];
 
 usernameEl.innerText = username;

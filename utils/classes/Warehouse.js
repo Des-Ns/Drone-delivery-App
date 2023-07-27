@@ -9,10 +9,7 @@ class Warehouse {
     this.dronesInTransit = [];
   }
 
-  idGen() {
-    const index = Math.floor(Math.random() * 10) + 1; // for test only
-    return `W-${index}`;
-  }
+  // true ID method
 
   orderRecieved(order) {
     order.status = 'Accepted';
@@ -22,8 +19,9 @@ class Warehouse {
   dispatchDrone() {
     if (this.ordersActive.length > 0 && this.dronesStandingBy.length > 0) {
       const dispatchedDroneId = this.dronesStandingBy.shift();
-      const currOrderId = this.ordersActive.shift();
       this.dronesInTransit.push(dispatchedDroneId);
+
+      const currOrderId = this.ordersActive.shift();
       this.orderHistory.push(currOrderId);
 
       return { dispatchedDroneId, currOrderId };
@@ -41,6 +39,13 @@ module.exports = Warehouse;
 //   this.dronesInTransit.splice(droneToRemove, 1);
 // }
 
+// clearDroneInTransitArray(closestWarehouse) {
+//   const readyDrones = closestWarehouse.dronesInTransit.filter(
+//     (drone) => drone.availableStatus === true
+//   );
+//   closestWarehouse.dronesStandingBy.push(...readyDrones);
+// }
+
 // dispatchDrone(closestWarehouse) {
 //   if (closestWarehouse.ordersActive.length > 0 && closestWarehouse.dronesStandingBy.length > 0) {
 //     const dispatchedDrone = closestWarehouse.dronesStandingBy.shift();
@@ -53,18 +58,4 @@ module.exports = Warehouse;
 //     return dispatchedDrone;
 //   }
 //   return 'No drones available';
-// }
-
-// clearDroneInTransitArray(closestWarehouse) {
-//   const readyDrones = closestWarehouse.dronesInTransit.filter(
-//     (drone) => drone.availableStatus === true
-//   );
-//   closestWarehouse.dronesStandingBy.push(...readyDrones);
-// }
-
-// droneStatus(drone) {
-//   if (drone.availableStatus === false) {
-//     this.dronesInTransit.push(drone);
-//   }
-//   this.dronesStandingBy.push(drone);
 // }

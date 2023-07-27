@@ -7,6 +7,18 @@ class Drone {
     this.ordersDelivered = [];
     this.availableStatus = true;
     this.warehouseId = warehouseId;
+    this.batteryPower = 1000;
+  }
+
+  powerCharging(currBatteryPower, callback) {
+    const chargingTimeFull = 10000;
+    const chargingTime =
+      chargingTimeFull - (chargingTimeFull / this.batteryPower) * currBatteryPower;
+
+    setTimeout(() => {
+      this.availableStatus = true;
+      callback(); // () => {console.log('Drone is fully charged and available now.');
+    }, chargingTime);
   }
 }
 

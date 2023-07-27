@@ -31,15 +31,17 @@ class Network {
   orderAcceptHandler(order) {
     const closestWarehouseFound = this.findClosestWarehouse(order.location);
     order.distance = closestWarehouseFound.minDistance;
+    console.log('::38-Network closestFound =>', closestWarehouseFound);
+
     const closestWarehouse = this.warehouses.find(
       (warehouse) => warehouse.id === closestWarehouseFound.id
     );
     closestWarehouse.orderRecieved(order);
-    console.log('::38-Network closestFound =>', closestWarehouseFound);
+
     return { closestWarehouse, closestWarehouseFound };
   }
 
-  countdownDelivery(drone, orderStatus, currOrderId, distanceToCustomer, progressDataUpdate) {
+  countdownDelivery(drone, currOrderId, distanceToCustomer, progressDataUpdate) {
     drone.orderActiveIds.push(currOrderId);
     let deliveryTime = distanceToCustomer;
     drone.availableStatus = false;
@@ -94,22 +96,28 @@ class Network {
       if (returnTime <= 0) {
         clearInterval(transitToWarehouse);
         drone.availableStatus = true;
-        // drone.emit('countdownReturnCompleted');
-        // this.clearDroneInTransitArray()
+        this.clearDroneInTransitArray(drone);
       }
       console.log('::51 returnTime =>', returnTime);
     }, 500);
   }
 
-  clearDroneInTransitArray(droneId, closestWarehouse) {
-    const readyDrones = closestWarehouse.dronesInTransit.filter((drone) => drone === droneId);
-    const droneToRemove = closestWarehouse.dronesInTransit.findIndex((id) => id === droneId);
-    closestWarehouse.dronesStandingBy.push(...readyDrones);
-    closestWarehouse.dronesInTransit.splice(droneToRemove, 1);
+  clearDroneInTransitArray(drone) {
+    const warehouse = this.warehouses.find((warehouse) => warehouse.id === drone.warehouseId);
+    const droneToRemove = warehouse.dronesInTransit.findIndex((id) => id === drone.id);
+    warehouse.dronesStandingBy.push(drone.id);
+    warehouse.dronesInTransit.splice(droneToRemove, 1);
   }
 }
 
 module.exports = Network;
+
+// clearDroneInTransitArray(droneId) {
+//   const readyDrones = closestWarehouse.dronesInTransit.filter((drone) => drone === droneId);
+//   const droneToRemove = closestWarehouse.dronesInTransit.findIndex((id) => id === droneId);
+//   closestWarehouse.dronesStandingBy.push(...readyDrones);
+//   closestWarehouse.dronesInTransit.splice(droneToRemove, 1);
+// }
 
 // calculateOrderDistance(order, callback) {
 //   const orderWithDistance = {

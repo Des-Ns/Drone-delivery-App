@@ -10,6 +10,7 @@ let drones = [];
 
 warehouses.forEach((warehouse) => {
   drones.push(new Drone(warehouse.id), new Drone(warehouse.id), new Drone(warehouse.id));
+
   warehouse.dronesStandingBy.push(
     ...drones.filter((drone) => drone.warehouseId === warehouse.id).map((drone) => drone.id)
   );
@@ -17,13 +18,11 @@ warehouses.forEach((warehouse) => {
 
 function setupSockets(io, users) {
   io.use(wrap(sessionMiddleware));
+
   const network = new Network(warehouses, drones, users, orders);
 
   io.of('/').on('connection', (socket) => {
-    console.log(
-      '::59',
-      `New socet connection ${socket.id}, sessinID:: ${socket.request.sessionID}`
-    );
+    console.log(`New socet connection ${socket.id}, sessinID:: ${socket.request.sessionID}`);
     const { sessionID } = socket.request;
     const user = users.find((user) => user.sessionIDs.includes(sessionID));
 
@@ -39,7 +38,10 @@ function setupSockets(io, users) {
         socket.emit('warehouse-list', warehouses);
       }
 
-      io.to(`${roomToJoin}`).emit('roomJoined', `User joined ${roomToJoin} room.`);
+      io.to(`${roomToJoin}`).emit(
+        'roomJoined',
+        `User '${user.username}', joined ${roomToJoin} room.`
+      );
     });
 
     socket.on('add-warehouse', (newWarehouse) => {
@@ -80,7 +82,7 @@ function setupSockets(io, users) {
         order.customerId = user.id;
         user.orders.push(order.id);
         orders.push(order);
-        const wH = network.orderAcceptHandler(order);
+        const { closestWarehouse, closestWarehouseFound } = network.orderAcceptHandler(order);
 
         console.log(`New order assigned to user: ${user.username}, user Id: ${user.id}`);
         console.log(':: 99 order =>', order);
@@ -88,8 +90,9 @@ function setupSockets(io, users) {
         user.socketIDs.forEach((socketId) => {
           io.to(socketId).emit('order-accepted', order);
         });
+        io.to('owner').emit('order-accepted', order);
 
-        const currDroneAndOrderIds = wH.closestWarehouse.dispatchDrone();
+        const currDroneAndOrderIds = closestWarehouse.dispatchDrone(); // dispatch
         console.log('::98 currDroneAndOrderIds => ', currDroneAndOrderIds);
         const currDrone = drones.find(
           (drone) => drone.id === currDroneAndOrderIds.dispatchedDroneId
@@ -98,19 +101,20 @@ function setupSockets(io, users) {
         if (currDrone) {
           network.countdownDelivery(
             currDrone,
-            order.status,
             currDroneAndOrderIds.currOrderId,
-            wH.closestWarehouseFound.minDistance,
+            closestWarehouseFound.minDistance,
             (progressData) => {
-              io.emit('order-update', progressData);
+              io.to('owner').emit('order-update', progressData);
+
+              user.socketIDs.forEach((socketId) => {
+                io.to(socketId).emit('order-update', progressData);
+              });
             }
           );
 
-          network.clearDroneInTransitArray(currDrone.id, wH.closestWarehouse);
-
           setInterval(() => {
-            console.log(':: 116 WH-orderHystory => ', wH.closestWarehouse);
-            console.log(':: 117 WH-orderHystory => ', wH.closestWarehouse.orderHistory);
+            console.log(':: 116 closestWarehouse => ', closestWarehouse);
+            console.log(':: 117 closestWarehouse.orderHistory => ', closestWarehouse.orderHistory);
             console.log(':: 118 currDrone => ', currDrone);
           }, 2000);
         } else {
@@ -123,8 +127,7 @@ function setupSockets(io, users) {
     });
 
     socket.on('disconnect', () => {
-      const disconnectedSocketId = socket.id;
-      const disconnectedSocketIndex = user.socketIDs.indexOf(disconnectedSocketId);
+      const disconnectedSocketIndex = user.socketIDs.indexOf(socket.id);
       user.socketIDs.splice(disconnectedSocketIndex, 1);
 
       io.emit('msg', 'User left');
