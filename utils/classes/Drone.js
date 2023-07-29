@@ -10,19 +10,23 @@ class Drone {
     this.batteryPower = 1000;
   }
 
-  powerCharging(currBatteryPower, callback) {
-    const chargingTimeFull = 10000;
-    const chargingTime =
-      chargingTimeFull - (chargingTimeFull / this.batteryPower) * currBatteryPower;
+  updateBatteryPowerProperty() {}
 
-    setTimeout(() => {
-      this.availableStatus = true;
-      callback(); // () => {console.log('Drone is fully charged and available now.');
-    }, chargingTime);
-  }
+  batteryPowerDraining() {}
 }
 
 module.exports = Drone;
+
+// powerCharging(currBatteryPower, callback) {
+//   const chargingTimeFull = 10000;
+//   const chargingTime =
+//     chargingTimeFull - (chargingTimeFull / this.batteryPower) * currBatteryPower;
+
+//   setTimeout(() => {
+//     this.availableStatus = true;
+//     callback(); // () => {console.log('Drone is fully charged and available now.');
+//   }, chargingTime);
+// }
 
 // countdownDelivery(orderStatus, currOrderId, distanceToCustomer, progressDataUpdate) {
 //   this.orderActiveIds.push(currOrderId);

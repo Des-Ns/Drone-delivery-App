@@ -36,18 +36,24 @@ class Network {
     const closestWarehouse = this.warehouses.find(
       (warehouse) => warehouse.id === closestWarehouseFound.id
     );
-    closestWarehouse.orderRecieved(order);
+    closestWarehouse.orderRecieved(order, order.distance);
 
     return { closestWarehouse, closestWarehouseFound };
   }
 
-  countdownDelivery(drone, currOrderId, distanceToCustomer, progressDataUpdate) {
+  countdownDelivery(
+    drone,
+    currOrderId,
+    distanceToCustomer,
+    powerNeededForOrder,
+    progressDataUpdate
+  ) {
     drone.orderActiveIds.push(currOrderId);
-    let deliveryTime = distanceToCustomer;
     drone.availableStatus = false;
+    let deliveryTime = distanceToCustomer;
 
     const transitToCustomer = setInterval(() => {
-      deliveryTime -= 0.5;
+      deliveryTime -= 1;
       console.log('::25 deliveryTime =>', deliveryTime);
 
       if (deliveryTime <= 0) {
@@ -75,7 +81,7 @@ class Network {
 
         console.log('::36-Drone> Order Complete');
 
-        this.countdownReturn(drone, distanceToCustomer);
+        this.countdownReturn(drone, distanceToCustomer, powerNeededForOrder);
       } else {
         drone.orderActiveIds.forEach((orderId) => {
           progressDataUpdate({
@@ -85,28 +91,32 @@ class Network {
           });
         });
       }
-    }, 500);
+    }, 1000);
   }
 
-  countdownReturn(drone, distanceToCustomer) {
+  countdownReturn(drone, distanceToCustomer, powerNeededForOrder) {
     let returnTime = distanceToCustomer;
 
     const transitToWarehouse = setInterval(() => {
-      returnTime -= 0.5;
+      returnTime -= 1;
       if (returnTime <= 0) {
         clearInterval(transitToWarehouse);
         drone.availableStatus = true;
-        this.clearDroneInTransitArray(drone);
+        drone.batteryPower -= powerNeededForOrder;
+        this.clearDroneInTransitArray(drone, powerNeededForOrder);
       }
       console.log('::51 returnTime =>', returnTime);
-    }, 500);
+    }, 1000);
   }
 
-  clearDroneInTransitArray(drone) {
+  clearDroneInTransitArray(drone, powerNeededForOrder) {
     const warehouse = this.warehouses.find((warehouse) => warehouse.id === drone.warehouseId);
-    const droneToRemove = warehouse.dronesInTransit.findIndex((id) => id === drone.id);
-    warehouse.dronesStandingBy.push(drone.id);
-    warehouse.dronesInTransit.splice(droneToRemove, 1);
+    const droneToRemoveIndex = warehouse.dronesInTransit.findIndex((obj) => obj.id === drone.id);
+    const droneInWarehouse = warehouse.dronesInTransit[droneToRemoveIndex];
+    droneInWarehouse.batteryPower -= powerNeededForOrder;
+
+    warehouse.dronesStandingBy.push(droneInWarehouse);
+    warehouse.dronesInTransit.splice(droneToRemoveIndex, 1);
   }
 }
 

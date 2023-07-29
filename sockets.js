@@ -4,15 +4,17 @@ const Drone = require('./utils/classes/Drone.js');
 const Warehouse = require('./utils/classes/Warehouse.js');
 
 const orders = [];
-const warehouses = [new Warehouse(93, 140, 'W-11', 3, []), new Warehouse(186, 140, 'W-12', 3, [])];
+const warehouses = [new Warehouse(93, 140, 'W-11', 1, []), new Warehouse(186, 140, 'W-12', 1, [])];
 let drones = [];
 // const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
 
 warehouses.forEach((warehouse) => {
-  drones.push(new Drone(warehouse.id), new Drone(warehouse.id), new Drone(warehouse.id));
+  drones.push(new Drone(warehouse.id));
 
   warehouse.dronesStandingBy.push(
-    ...drones.filter((drone) => drone.warehouseId === warehouse.id).map((drone) => drone.id)
+    ...drones
+      .filter((drone) => drone.warehouseId === warehouse.id)
+      .map((drone) => ({ id: drone.id, batteryPower: drone.batteryPower }))
   );
 });
 
@@ -76,7 +78,7 @@ function setupSockets(io, users) {
       io.to('owner').emit('warehouse-list', warehouses);
     });
 
-    socket.on('order', (order) => {
+    socket.on('order', async (order) => {
       console.log(':: 73 order =>', order);
       if (user) {
         order.customerId = user.id;
@@ -92,17 +94,23 @@ function setupSockets(io, users) {
         });
         io.to('owner').emit('order-accepted', order);
 
-        const currDroneAndOrderIds = closestWarehouse.dispatchDrone(); // dispatch
-        console.log('::98 currDroneAndOrderIds => ', currDroneAndOrderIds);
-        const currDrone = drones.find(
-          (drone) => drone.id === currDroneAndOrderIds.dispatchedDroneId
+        const powerNeededForOrder = closestWarehouse.orderBatteryConsumption(
+          closestWarehouseFound.minDistance
         );
 
-        if (currDrone) {
+        const { dispatchedDrone, currOrderId } = await closestWarehouse.dispatchDrone(
+          powerNeededForOrder
+        );
+
+        if (dispatchedDrone) {
+          console.log('::98 currDroneAndOrderIds => ', dispatchedDrone.id);
+          const currDrone = drones.find((drone) => drone.id === dispatchedDrone.id);
+
           network.countdownDelivery(
             currDrone,
-            currDroneAndOrderIds.currOrderId,
+            currOrderId,
             closestWarehouseFound.minDistance,
+            powerNeededForOrder,
             (progressData) => {
               io.to('owner').emit('order-update', progressData);
 
@@ -114,7 +122,6 @@ function setupSockets(io, users) {
 
           setInterval(() => {
             console.log(':: 116 closestWarehouse => ', closestWarehouse);
-            console.log(':: 117 closestWarehouse.orderHistory => ', closestWarehouse.orderHistory);
             console.log(':: 118 currDrone => ', currDrone);
           }, 2000);
         } else {
