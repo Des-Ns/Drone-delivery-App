@@ -9,10 +9,6 @@ const productsEl = document.querySelectorAll('#product');
 const tableBody = document.getElementById('tbody');
 const orderRowMap = new Map();
 
-setInterval(() => {
-  console.dir(orderRowMap);
-}, 1500);
-
 let products = [];
 let newOrder;
 

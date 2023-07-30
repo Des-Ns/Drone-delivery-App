@@ -73,8 +73,6 @@ function setupSockets(io, users) {
           (warehouse) => warehouse.id === warehouseId
         );
 
-        console.log(indexOfWarehouseToDel);
-
         drones = drones.filter((drone) => !warehouseIdsToRemove.includes(drone.warehouseId));
         warehouses.splice(indexOfWarehouseToDel, 1);
       });
@@ -83,14 +81,14 @@ function setupSockets(io, users) {
     });
 
     socket.on('order', async (order) => {
-      console.log('::82 order =>', order);
+      console.log('::84 order =>', order);
 
       order.customerId = user.id;
       user.orders.push(order.id);
       orders.push(order);
       const { closestWarehouse, closestWarehouseFound } = network.orderAcceptHandler(order);
 
-      console.log(`::89 New order assigned to user: ${user.username}, user Id: ${user.id}`);
+      console.log(`::91 New order assigned to user: ${user.username}, user Id: ${user.id}`);
 
       user.socketIDs.forEach((socketId) => {
         io.to(socketId).emit('order-accepted', order);
@@ -106,7 +104,8 @@ function setupSockets(io, users) {
       );
 
       if (dispatchedDrone) {
-        console.log('::105 dispatchedDrone.id => ', dispatchedDrone.id);
+        console.log('::107 dispatchedDrone.id => ', dispatchedDrone.id);
+        console.log('::108 closestWarehouse => ', closestWarehouse);
         const currDrone = drones.find((drone) => drone.id === dispatchedDrone.id);
 
         network.countdownDelivery(
@@ -123,12 +122,12 @@ function setupSockets(io, users) {
           }
         );
 
-        setInterval(() => {
-          console.log('::123 closestWarehouse => ', closestWarehouse);
-          console.log('::124 currDrone => ', currDrone);
-        }, 2000);
+        // setInterval(() => {
+        //   console.log('::123 closestWarehouse => ', closestWarehouse);
+        //   console.log('::124 currDrone => ', currDrone);
+        // }, 2000);
       } else {
-        console.log('::127 No available drone to dispatch.');
+        console.log('::130 No available drone to dispatch.');
       }
     });
 
