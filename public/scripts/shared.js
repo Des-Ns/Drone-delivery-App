@@ -1,10 +1,12 @@
 function abbreviateInput(input) {
   if (typeof input === 'string') {
     const el = String(input).substring(0, 5);
+
     return el;
   }
 
   const el = input.toFixed(0);
+
   return el;
 }
 
@@ -17,8 +19,10 @@ function formatTime(seconds) {
     const formattedSeconds = String(
       remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds
     );
+
     return `${formattedMinutes}:${formattedSeconds}`;
   }
+
   return ' - ';
 }
 
@@ -64,6 +68,7 @@ export function updateTable(data, tableBody, orderRowMap) {
 export function highlightElement(element) {
   if (element.classList.contains('active')) {
     element.classList.remove('active');
+
     return;
   }
   element.classList.add('active');

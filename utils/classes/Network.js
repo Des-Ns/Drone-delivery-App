@@ -31,7 +31,7 @@ class Network {
   orderAcceptHandler(order) {
     const closestWarehouseFound = this.findClosestWarehouse(order.location);
     order.distance = closestWarehouseFound.minDistance;
-    console.log('::38-Network closestFound =>', closestWarehouseFound);
+    console.log('::34-Network closestWarehouseFound =>', closestWarehouseFound);
 
     const closestWarehouse = this.warehouses.find(
       (warehouse) => warehouse.id === closestWarehouseFound.id
@@ -54,7 +54,7 @@ class Network {
 
     const transitToCustomer = setInterval(() => {
       deliveryTime -= 1;
-      console.log('::25 deliveryTime =>', deliveryTime);
+      console.log('::57-Network deliveryTime =>', deliveryTime);
 
       if (deliveryTime <= 0) {
         drone.orderActiveIds.forEach((orderId) => {
@@ -79,7 +79,7 @@ class Network {
         drone.orderActiveIds.splice(indexForDelete, 1);
         drone.ordersDelivered.push(...completedOrderId);
 
-        console.log('::36-Drone> Order Complete');
+        console.log('::82-Network Drone -> Order Complete');
 
         this.countdownReturn(drone, distanceToCustomer, powerNeededForOrder);
       } else {
@@ -105,7 +105,7 @@ class Network {
         drone.batteryPower -= powerNeededForOrder;
         this.clearDroneInTransitArray(drone, powerNeededForOrder);
       }
-      console.log('::51 returnTime =>', returnTime);
+      console.log('::108-Network returnTime =>', returnTime);
     }, 1000);
   }
 
@@ -121,42 +121,3 @@ class Network {
 }
 
 module.exports = Network;
-
-// clearDroneInTransitArray(droneId) {
-//   const readyDrones = closestWarehouse.dronesInTransit.filter((drone) => drone === droneId);
-//   const droneToRemove = closestWarehouse.dronesInTransit.findIndex((id) => id === droneId);
-//   closestWarehouse.dronesStandingBy.push(...readyDrones);
-//   closestWarehouse.dronesInTransit.splice(droneToRemove, 1);
-// }
-
-// calculateOrderDistance(order, callback) {
-//   const orderWithDistance = {
-//     ...order,
-//     distance: this.findNearestWarehouse(order.location),
-//   };
-//   const bestDistance = orderWithDistance.distance.minDistance;
-
-//   order.distance = bestDistance;
-//   order.time = bestDistance;
-//   order.timer = null;
-
-//   console.log(':: 27 orderWithDistance =>', orderWithDistance);
-
-//   callback(order);
-// }
-
-// calculateTotalLocation() {
-//   const orderLocation = this.orders.map((order) => {
-//     const { location } = order;
-//     return { ...order, location };
-//   });
-//   console.log(':: orderLocation =>', orderLocation);
-// }
-
-// markOrderAsCompleted(orderId) {
-//   const completedOrder = this.orders.find((order) => order.orderId === orderId);
-//   if (completedOrder) {
-//     completedOrder.status = 'completed';
-//   }
-//   return completedOrder;
-// }

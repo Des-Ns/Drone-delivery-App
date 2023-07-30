@@ -9,10 +9,6 @@ class Drone {
     this.warehouseId = warehouseId;
     this.batteryPower = 1000;
   }
-
-  updateBatteryPowerProperty() {}
-
-  batteryPowerDraining() {}
 }
 
 module.exports = Drone;
