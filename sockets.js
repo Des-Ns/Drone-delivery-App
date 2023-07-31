@@ -1,7 +1,7 @@
 const { sessionMiddleware, wrap } = require('./controlers/serverControler.js');
-const Network = require('./utils/classes/Network.js');
-const Drone = require('./utils/classes/Drone.js');
-const Warehouse = require('./utils/classes/Warehouse.js');
+const Network = require('./classes/Network.js');
+const Drone = require('./classes/Drone.js');
+const Warehouse = require('./classes/Warehouse.js');
 
 const orders = [];
 const warehouses = [new Warehouse(93, 140, 'W-11', 1, []), new Warehouse(186, 140, 'W-12', 1, [])];

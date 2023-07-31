@@ -5,8 +5,8 @@ const socketio = require('socket.io');
 const bodyParser = require('body-parser');
 const { sessionMiddleware, userSessionStore } = require('./controlers/serverControler.js');
 
-const User = require('./utils/classes/User.js');
-// const Room = require('./utils/classes/Room.js');
+const User = require('./classes/User.js');
+// const Room = require('./classes/Room.js');
 
 const setupSockets = require('./sockets.js');
 
