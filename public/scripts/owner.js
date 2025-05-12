@@ -18,7 +18,7 @@ const warehouses = [];
 
 usernameEl.innerText = username;
 
-// SOCKETS
+//* SOCKETS
 
 const socket = io('http://localhost:5000/');
 
@@ -27,7 +27,8 @@ socket.on('connect', () => {
 });
 
 socket.on('warehouse-list', (list) => {
-  console.log(list);
+  console.log('Warehouses =>', list);
+
   warehousesContainer.innerHTML = '';
   list.forEach((item) => {
     warehouses.push(item);
@@ -39,6 +40,17 @@ socket.on('warehouse-list', (list) => {
     `;
     warehousesContainer.appendChild(warehouse);
   });
+});
+
+socket.on('order-history', (history) => {
+  if (history !== null && history.length > 0) {
+    history.forEach((order) => {
+      const orderData = order.order;
+      const progressData = order.progress;
+      createTableRow(orderData, tableBody, orderRowMap);
+      updateTable(progressData, tableBody, orderRowMap);
+    });
+  }
 });
 
 socket.emit('joinRoom', 'owner');
@@ -53,7 +65,17 @@ socket.on('order-accepted', (data) => {
 });
 
 socket.on('order-update', (data) => {
-  updateTable(data, tableBody, orderRowMap);
+  // check if there is a row, then call the function
+  if (orderRowMap.get(data.id)) {
+    updateTable(data, tableBody, orderRowMap);
+  }
+});
+
+socket.on('redirect-to-index', (data) => {
+  alert(data.message);
+  setTimeout(() => {
+    window.location.href = '/index.html';
+  }, 250);
 });
 
 addBtn.addEventListener('click', () => {

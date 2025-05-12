@@ -40,6 +40,13 @@ socket.on('order-update', (data) => {
   updateTable(data, tableBody, orderRowMap);
 });
 
+socket.on('redirect-to-index', (data) => {
+  alert(data.message);
+  setTimeout(() => {
+    window.location.href = '/index.html';
+  }, 250);
+});
+
 productsEl.forEach((prodEl) => {
   prodEl.addEventListener('click', () => {
     highlightElement(prodEl);

@@ -1,13 +1,14 @@
-const { sessionMiddleware, wrap } = require('./controlers/serverControler.js');
+const { sessionMiddleware, wrap } = require('./middlewares/sessionMiddleware.js');
 const Network = require('./classes/Network.js');
 const Drone = require('./classes/Drone.js');
 const Warehouse = require('./classes/Warehouse.js');
+const Room = require('./classes/Room.js');
 
 const orders = [];
 const warehouses = [new Warehouse(93, 140, 'W-11', 1, []), new Warehouse(186, 140, 'W-12', 1, [])];
 let drones = [];
-// const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
-// let eventHistory = new Map()
+
+const rooms = [new Room(0, 'owner', '/'), new Room(1, 'client', '/')];
 
 warehouses.forEach((warehouse) => {
   drones.push(new Drone(warehouse.id));
@@ -30,6 +31,13 @@ function setupSockets(io, users) {
     const { sessionID } = socket.request;
     const user = users.find((user) => user.sessionIDs.includes(sessionID));
 
+    if (!user) {
+      console.error(`User not found for sessionID: ${sessionID}`);
+      socket.emit('redirect-to-index', { message: 'Only one session per browser allowed' });
+      socket.disconnect(true); //* Disconnect the socket if the user is not found
+      return;
+    }
+
     user.socketIDs.push(socket.id);
 
     socket.on('joinRoom', (roomToJoin) => {
@@ -38,6 +46,7 @@ function setupSockets(io, users) {
 
       if (roomToJoin === 'owner') {
         socket.emit('warehouse-list', warehouses);
+        socket.emit('order-history', rooms[0].getHystory()); // * Send history ot he orders to the owner room
       }
 
       io.to(`${roomToJoin}`).emit(
@@ -86,6 +95,7 @@ function setupSockets(io, users) {
       order.customerId = user.id;
       user.orders.push(order.id);
       orders.push(order);
+      rooms[0].addOrderData(order); // * Add order data to the owner room history
       const { closestWarehouse, closestWarehouseFound } = network.orderAcceptHandler(order);
 
       console.log(`::91 New order assigned to user: ${user.username}, user Id: ${user.id}`);
@@ -118,6 +128,7 @@ function setupSockets(io, users) {
 
             user.socketIDs.forEach((socketId) => {
               io.to(socketId).emit('order-update', progressData);
+              rooms[0].updateOrderProgress(currOrderId, progressData); // * Update order progress in the owner room history
             });
           }
         );

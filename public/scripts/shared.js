@@ -28,6 +28,7 @@ function formatTime(seconds) {
 
 export function createTableRow(data, tableBody, orderRowMap) {
   const newRow = document.createElement('tr');
+  console.log(':: createTableRow data=>', data);
 
   newRow.innerHTML = `
         <td>#${abbreviateInput(data.id)}</td>
@@ -44,7 +45,7 @@ export function createTableRow(data, tableBody, orderRowMap) {
 }
 
 export function updateTable(data, tableBody, orderRowMap) {
-  console.log(data);
+  console.log('::updateTableRow data=>', data);
 
   const { id } = data;
   const existingRow = orderRowMap.get(id);
@@ -56,9 +57,12 @@ export function updateTable(data, tableBody, orderRowMap) {
     timeCell.textContent = abbreviateInput(formatTime(data.time));
     statusCell.textContent = data.status; // === 'completed' ? 'completed' : 'in progress';
   } else {
-    createTableRow(data, tableBody, orderRowMap); //! data missing - name, location , customer.id, distance
+    //! data is missing - name, location , customer.id, distance. properties
+    // data = id, stautus, time
+    createTableRow(data, tableBody, orderRowMap);
   }
-  // Remove order
+
+  // REMOVE ORDER FROM DOM - If the order is completed, remove the row from the table and the map OPRION
   // if (data.status === 'Completed') {
   //   tableBody.removeChild(existingRow);
   //   orderRowMap.delete(id);

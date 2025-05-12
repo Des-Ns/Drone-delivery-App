@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
-const { sessionMiddleware, userSessionStore } = require('./controlers/serverControler.js');
+const { sessionMiddleware, userSessionStore } = require('./middlewares/sessionMiddleware.js');
 
 const User = require('./classes/User.js');
 // const Room = require('./classes/Room.js');
