@@ -4,7 +4,7 @@ A Node.js application for managing drone deliveries, warehouses, and real-time o
 
 ## Features
 
-- **User Authentication:** Login/logout with session management.
+- **User Authentication:** Login/logout with session management. ( Real authentication is not implemented )
 - **Owner and Client Roles:** Owners can manage warehouses and view all orders; clients can place orders.
 - **Warehouse Management:** Add/remove warehouses, manage drones, and track their status.
 - **Order Management:** Place orders, assign drones, and track delivery progress in real time.
@@ -75,7 +75,7 @@ drone-app/
 
 ## Usage
 
-- **Login:** Use the login form on `index.html` to log in as an owner or client.
+- **Login:** Use the login form on `index.html` to log in as an owner or client. ( User names and passwords are not authenticated, nor verified. )
 - **Owner Dashboard:** Access `owner.html` to manage warehouses and view all orders and their progress.
 - **Client Dashboard:** Access `client.html` to place new orders and track their status.
 - **Order History:** Owners receive the full order history (with progress) upon entering the owner room. History for users is not implemented!
@@ -91,5 +91,5 @@ drone-app/
 
 - The app goal is delivery simulation and proof of concept exercise.
 - The app uses in-memory storage for sessions, users, and order data.
-- There can be only one loggin per browser instance. ( different browsers or browser profiles can be used )
+- There can be only one user logged in per browser instance. ( different browsers or browser profiles can be used )
 - The code is modular, with clear separation between server logic, business logic (classes), and client-side scripts.
