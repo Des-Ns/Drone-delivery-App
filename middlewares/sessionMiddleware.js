@@ -6,7 +6,7 @@ const sessionMiddleware = session({
   secret: 'your-secret-key',
   resave: false,
   saveUninitialized: false,
-  store: new session.MemoryStore(), // session data
+  store: new session.MemoryStore(), // session data, MemoryStore is used for development
 });
 
 const wrap = (expressMiddleware) => (socket, next) => expressMiddleware(socket.request, {}, next);
